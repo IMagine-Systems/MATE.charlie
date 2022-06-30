@@ -20,17 +20,21 @@ export default function App() {
     }
   });
 
+  console.log(isLoggedIn);
   return (
     <NavigationContainer>
-      {isLoggedIn ? <Stack.Navigator screenOptions={{headerShown: false, animationEnabled:false}}>
-        <Stack.Screen  name="HomeScreen" component={HomeScreen}/>
-      </Stack.Navigator> :
-      <Stack.Navigator
-        screenOptions={{ headerShown: false, animationEnabled:false}}
-      >
-        <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
-      </Stack.Navigator>}
-    </NavigationContainer>
+    {isLoggedIn ? (
+    <Stack.Navigator screenOptions={{headerShown: false, animationEnabled:false}}>
+      <Stack.Screen name="HomeScreen" component={HomeScreen}/>
+    </Stack.Navigator> 
+    ) : (
+    <Stack.Navigator
+      screenOptions={{ headerShown: false, animationEnabled:false}}
+    >
+      <Stack.Screen name="LoginScreen" component={LoginScreen} />
+      <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+    </Stack.Navigator>
+  )}
+  </NavigationContainer>
   );
 }

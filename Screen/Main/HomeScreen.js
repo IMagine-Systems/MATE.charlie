@@ -9,7 +9,6 @@ export default function HomeScreen({navigation}) {
             <TouchableOpacity
                 onPress={() => {
                     signOut(auth);
-                    navigation.navigate("LoginScreen");
                 }}
                 style={{padding: 30, backgroundColor: 'yellow', width: 150}}
             >

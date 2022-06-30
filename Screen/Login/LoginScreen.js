@@ -23,7 +23,6 @@ export default function LoginScreen({navigation}) {
         signInWithEmailAndPassword(auth, email, pwd)
         .then(() => {
             alert('로그인 성공');
-            navigation.navigate("HomeScreen");
         })
         .catch((error) => {
             alert(error.message)

@@ -1,9 +1,9 @@
 import { View, StyleSheet, Text, TextInput, TouchableOpacity} from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {auth} from '../../db/DatabaseConfig/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { db } from '../../db/DatabaseConfig/firebase';
-import { doc, setDoc, arrayUnion } from 'firebase/firestore';
+import { doc, setDoc, arrayUnion, getDoc } from 'firebase/firestore';
 
 export default function SignUpScreen({navigation}) {
     const [value, setValue] = useState({
@@ -15,6 +15,12 @@ export default function SignUpScreen({navigation}) {
 
     });
 
+    const [ validation, setValidation ] = useState(false);
+    
+    useEffect(() => {
+        validationUser();
+    }, []);
+
     const handleChange = (text, eventName) => {
         setValue(prev => {
             console.log(prev);
@@ -25,23 +31,56 @@ export default function SignUpScreen({navigation}) {
         })
     }
 
+
+
     const SignUp = () => {
+        validationUser();
         const {email, pwd, department, studentId, name} = value;
         const myDoc = doc(db, 'User', 'UserInfo');
         
-        setDoc(myDoc, {"UserInfo": arrayUnion(value)}, {merge: true})
-        .then(() => alert("회원 등록"))
-        .catch((error) => alert(error.message));
+        console.log('검증 : ', validation);
+        if (validation === true) {
+            setDoc(myDoc, {"UserInfo": arrayUnion(value)}, {merge: true})
+            .then(() => alert("회원 등록"))
+            .catch((error) => alert(error.message));
+    
+            createUserWithEmailAndPassword(auth, email, pwd)
+            .then(() => {
+                alert("계정회원 가입 성공!");
+                navigation.replace("LoginScreen");
+            })
+            .catch((error) => {
+                alert(error.message);
+            });
+        } else {
+            alert("회원가입 실패했습니다.");
+        }
+    }
 
-        createUserWithEmailAndPassword(auth, email, pwd)
-        .then(() => {
-            alert("계정회원 가입 성공!");
-            navigation.navigate("LoginScreen");
+    
+    const validationUser = () => {
+        const myDoc = doc(db, 'User', 'UserInfo');
+
+        getDoc(myDoc)
+        .then((snapshot) => {
+          if (snapshot.exists) {
+            //console.log("DB에서 불러온 유저 정보 : ", snapshot.data().UserInfo);
+            snapshot.data().UserInfo.forEach(element => {
+                if (value.name !== "" && value.studentId !== "" && value.department !== "" && value.studentId !== element.studentId) {
+                    setValidation(true);
+                } else {
+                    setValidation(false);
+                }
+            });
+        } else {
+            alert("No Document");
+          }
         })
         .catch((error) => {
-            alert(error.message);
+          alert(error.message);
         });
     }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
