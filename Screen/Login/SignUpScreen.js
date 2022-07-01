@@ -23,7 +23,6 @@ export default function SignUpScreen({navigation}) {
 
     const handleChange = (text, eventName) => {
         setValue(prev => {
-            console.log(prev);
             return {
                 ...prev,
                 [eventName]: text

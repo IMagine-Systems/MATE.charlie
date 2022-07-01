@@ -1,0 +1,22 @@
+{
+    "lecture_list" : [ {
+        "profesor_name": "박준호",
+        "subject_name": "인공지능빅데이터",
+        "review": "수업이 조금 ppt 위주로 진행되요. 개인 공부 잘 하셔야 합니다."
+
+    },{
+        "profesor_name": "류명춘",
+        "subject_name": "딥러닝이해",
+        "review": "만족합니다. 시험문제 어렵게 나온 다는점, 특히 심화문제 풀어야 됩니다."
+    },
+    {
+        "profesor_name": "류명춘",
+        "subject_name": "딥러닝이해",
+        "review": "만족합니다. 시험문제 어렵게 나온 다는점, 특히 심화문제 풀어야 됩니다."
+    },
+    {
+        "profesor_name": "하옥균",
+        "subject_name": "소프트웨어 테스팅",
+        "review": "실습문제 위주로 나오며, 문제 난인도가 엄청 높습니다. 실습, 문제 다풀어야 되여 ㅜㅜ."
+    }]
+}

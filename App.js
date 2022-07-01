@@ -20,7 +20,6 @@ export default function App() {
     }
   });
 
-  console.log(isLoggedIn);
   return (
     <NavigationContainer>
     {isLoggedIn ? (
