@@ -1,9 +1,10 @@
-import { View, StyleSheet, Text, TouchableOpacity, TextInput, Keyboard, Touchable } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useState } from 'react';
 import { SearchBar } from 'react-native-elements';
-import { Entypo } from '@expo/vector-icons';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
+import CustomRatingBar from "../../Component/start_rating/CustomRatingBar";
+import { FontAwesome } from '@expo/vector-icons';
+import FooterNav from "../../Component/nav/FooterNav";
+import Title from "../../Component/Title/Title";
 
 export default function HomeScreen({navigation}) {
     const [search, setSearch] = useState("");
@@ -21,12 +22,11 @@ export default function HomeScreen({navigation}) {
             setList();
         }
     }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <View style={styles.title_container}>
-                    <Text style={styles.title}>MATE</Text>
-                </View>
+                <Title />
                 <View style={styles.search_container}>
                     <View style={styles.search}>
                         <SearchBar
@@ -48,7 +48,14 @@ export default function HomeScreen({navigation}) {
                             <View style={styles.lecture_review_info}>
                                 <Text style={styles.subject_title}>{list.subject_name}</Text>
                                 <Text style={styles.profesor_name_title}>{list.profesor_name} 교수</Text>
-                                <Text style={styles.lecture_score}>평균</Text>
+                                <View>
+                                    <View style={styles.lecture_score_container}>
+                                        <CustomRatingBar />
+                                        <Text style={styles.lecture_score}>4.0/50</Text>
+                                    </View>
+                                    <Text style={styles.review_writer}>22학년도 수강자</Text>
+                                </View>
+                                
                                 <View style={styles.lecture_review_content}>
                                     <Text>{list.review}</Text>
                                 </View>
@@ -71,19 +78,14 @@ export default function HomeScreen({navigation}) {
                 }
                 
             </View>
-            <View style={styles.footer}>
-                <View style={styles.nav}>
-                    <TouchableOpacity>
-                        <MaterialIcons name="rate-review" size={40} color="#A6CFFF" />
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <Entypo name="home" size={40} color="#A6CFFF" />
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <FontAwesome5 name="clipboard-list" size={40} color="#A6CFFF" />
-                    </TouchableOpacity>
-                </View>
+            <View style={styles.sub_container}>
+                <TouchableOpacity style={{width: 40}}>
+                    <View style={styles.wirte_button}>
+                        <FontAwesome name="pencil-square-o" size={24} color="white" />
+                    </View>
+                </TouchableOpacity>
             </View>
+            <FooterNav />
         </View>
     );
 }
@@ -99,15 +101,7 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         marginRight: 20,
     }, 
-    title_container: {
-        flex: 1.5,
-        justifyContent: 'center',
-    },
-    title: {
-        color: '#007AFF',
-        fontWeight: 'bold',
-        fontSize: 35,
-    },
+
     search_container: {
         flex: 1,
         justifyContent: 'center',   
@@ -127,7 +121,7 @@ const styles = StyleSheet.create({
         borderTopColor: '#DBDBDB',
         borderBottomColor: '#DBDBDB',
         flexDirection: 'row',
-        flex: 0.2,
+        flex: 0.28,
     },
     lecture_review_info: {
         flex: 1,
@@ -147,9 +141,18 @@ const styles = StyleSheet.create({
     },
     lecture_score: {
         marginTop: 5,
+        marginLeft: 10,
+    },
+    lecture_score_container: {
+        flexDirection: 'row'
+    },
+    review_writer: {
+        color:'#B0B0B0',
+        fontSize: 10,
+        marginTop: 5
     },
     lecture_review_content: {
-        marginTop: 5,
+        marginTop: 10,
     },
     lecture_list_nonContest: {
         flex:1,
@@ -159,10 +162,6 @@ const styles = StyleSheet.create({
     lecture_list_nonContest_text: {
         fontSize: 25,
     }, 
-    footer: {
-        flex: 0.5,
-        borderTopWidth: 1,
-    },
     lecture_review_count_title: {
         backgroundColor: '#F2F2F2',
         width: 60,
@@ -177,11 +176,20 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginLeft: 5
     },
-    nav: {
-        flex: 1,
-        flexDirection: 'row',
+    sub_container: {
+        flex: 0.3,
+        marginLeft: 5,
+        marginRight: 5,
+        alignItems: 'flex-end',
+        paddingRight: 10,
+    },
+    wirte_button: {
+        justifyContent: 'center',
         alignItems: 'center',
-        justifyContent: 'space-evenly'
-    }
+        backgroundColor: '#A6CFFF',
+        width: 49,
+        height: 48,
+        borderRadius: 25,
+    },
     
 });
