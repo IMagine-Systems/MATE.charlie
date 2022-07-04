@@ -16,7 +16,6 @@ export default function HomeScreen({navigation}) {
         if (text) {
             lecture_list.filter(element => element.subject_name === text ? setList(element) : null);
             setSearch(text);
-            console.log(list)
         } else {
             setSearch('');
             setList();
@@ -79,13 +78,12 @@ export default function HomeScreen({navigation}) {
                 
             </View>
             <View style={styles.sub_container}>
-                <TouchableOpacity style={{width: 40}}>
+                <TouchableOpacity style={{width: 40}} onPress={() => navigation.navigate("WriteReview")}>
                     <View style={styles.wirte_button}>
                         <FontAwesome name="pencil-square-o" size={24} color="white" />
                     </View>
                 </TouchableOpacity>
             </View>
-            <FooterNav />
         </View>
     );
 }
@@ -177,7 +175,7 @@ const styles = StyleSheet.create({
         marginLeft: 5
     },
     sub_container: {
-        flex: 0.3,
+        flex: 0.7,
         marginLeft: 5,
         marginRight: 5,
         alignItems: 'flex-end',
