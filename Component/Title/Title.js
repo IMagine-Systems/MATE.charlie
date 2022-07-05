@@ -10,7 +10,9 @@ export default function Title({navigation}) {
                 </TouchableOpacity>
             </View>
             <View style={styles.profile}>
-                <TouchableOpacity>
+                    <TouchableOpacity
+                            onPress={() => navigation.navigate("Profile")}
+                        >
                     <Ionicons name="person-circle" size={38} color="#A6CFFF" />
                 </TouchableOpacity>
             </View>

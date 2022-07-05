@@ -2,9 +2,10 @@ import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useState } from 'react';
 import { SearchBar } from 'react-native-elements';
 import CustomRatingBar from "../../Component/start_rating/CustomRatingBar";
+import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import FooterNav from "../../Component/nav/FooterNav";
-import Title from "../../Component/Title/Title";
+import { color } from "react-native-elements/dist/helpers";
 
 export default function HomeScreen({navigation}) {
     const [search, setSearch] = useState("");
@@ -25,7 +26,23 @@ export default function HomeScreen({navigation}) {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Title />
+            <View style={styles.title_container}>
+                <View style={styles.title_logo}>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate("HomeScreen")}
+                        >
+                            <Text style={styles.title}>MATE</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.profile}>
+                       <TouchableOpacity
+                            onPress={() => navigation.navigate("Profile")}
+                        >
+                            <Ionicons name="person-circle" size={38} color="#A6CFFF" />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
                 <View style={styles.search_container}>
                     <View style={styles.search}>
                         <SearchBar
@@ -40,6 +57,7 @@ export default function HomeScreen({navigation}) {
                     </View>
                 </View>
             </View>
+
             <View style={styles.article}>
                 {
                     list !== undefined ? (
@@ -75,8 +93,8 @@ export default function HomeScreen({navigation}) {
                     </View>
                     )
                 }
-                
             </View>
+            
             <View style={styles.sub_container}>
                 <TouchableOpacity style={{width: 40}} onPress={() => navigation.navigate("WriteReview")}>
                     <View style={styles.wirte_button}>
@@ -99,6 +117,23 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         marginRight: 20,
     }, 
+
+    title_logo: {
+    },
+    title_container: {
+        flex: 1.5,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    title: {
+        color: '#007AFF',
+        fontWeight: 'bold',
+        fontSize: 35,
+    },
+    profile: {
+        flex: 1,
+        alignItems: 'flex-end',
+    },
 
     search_container: {
         flex: 1,

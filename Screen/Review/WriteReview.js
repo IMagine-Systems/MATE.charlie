@@ -4,7 +4,6 @@ import ReviewTestButton from "../../Component/button/ReviewTestButton";
 import SelectRating from "../../Component/start_rating/SelectRating";
 import LectureTextInput from "../../Component/textInput/LectureTextInput";
 import ReviewTextInput from "../../Component/textInput/ReviewTextInput";
-import Title from "../../Component/Title/Title";
 import { Ionicons } from '@expo/vector-icons';
 import {useState, useEffect} from 'react';
 
@@ -26,12 +25,15 @@ export default function WriteReview({navigation}) {
                         </TouchableOpacity>
                     </View>
                     <View style={styles.profile}>
-                        <TouchableOpacity>
+                       <TouchableOpacity
+                            onPress={() => navigation.navigate("Profile")}
+                        >
                             <Ionicons name="person-circle" size={38} color="#A6CFFF" />
                         </TouchableOpacity>
                      </View>
                 </View>
             </View>
+
             <View style={styles.article}>
                 <View style={styles.lecture_select_container}>
                     <ReviewTestButton text={['강의평가', '중간고사', '기말고사']} selectValue={setSelectValue}/>

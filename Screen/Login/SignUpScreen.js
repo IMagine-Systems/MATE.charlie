@@ -49,7 +49,7 @@ export default function SignUpScreen({navigation}) {
                 navigation.replace("LoginScreen");
             })
             .catch((error) => {
-                alert(error.message);
+                alert("이메일 혹은 비밀번호가 틀렸습니다.");
             });
         } else {
             alert("회원가입 실패했습니다.");
