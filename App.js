@@ -8,6 +8,7 @@ import { auth } from './db/DatabaseConfig/firebase';
 import { useState } from 'react';
 import WriteReview from "./Screen/Review/WriteReview";
 import Title from "./Component/Title/Title";
+import LectureReview from "./Screen/Review/LectureReview";
 
 const Stack = createStackNavigator();
 
@@ -29,6 +30,7 @@ export default function App() {
       <Stack.Screen name="HomeScreen" component={HomeScreen}/>
       <Stack.Screen name="Title" component={Title} />
       <Stack.Screen name="WriteReview" component={WriteReview} />
+      <Stack.Screen name="LectureReview" component={LectureReview} />
     </Stack.Navigator> 
     ) : (
     <Stack.Navigator

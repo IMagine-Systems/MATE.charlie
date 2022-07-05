@@ -1,10 +1,13 @@
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Alert, SafeAreaView } from "react-native";
 import { useState } from 'react';
 import { SearchBar } from 'react-native-elements';
 import CustomRatingBar from "../../Component/start_rating/CustomRatingBar";
 import { FontAwesome } from '@expo/vector-icons';
-import FooterNav from "../../Component/nav/FooterNav";
-import Title from "../../Component/Title/Title";
+import { auth } from "../../db/DatabaseConfig/firebase";
+import { signOut } from "firebase/auth";
+import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
 
 export default function HomeScreen({navigation}) {
     const [search, setSearch] = useState("");
@@ -22,10 +25,38 @@ export default function HomeScreen({navigation}) {
         }
     }
 
+    const logOut = () => {
+        Alert.alert(
+            "로그아웃 하실건가요?",
+            "",
+            [
+              {
+                text: "아니요",
+                style: "cancel"
+              },
+              { text: "예", onPress: () => signOut(auth) }
+            ]
+        );
+    }
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <StatusBar style="auto"/>
             <View style={styles.header}>
-                <Title />
+                <View style={styles.title_container}>
+                    <View style={styles.title_logo}>
+                        <TouchableOpacity>
+                            <Text style={styles.title}>MATE</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.profile}>
+                        <TouchableOpacity>
+                            <Ionicons name="person-circle" size={38} color="#A6CFFF" />
+                        </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity style={{marginLeft: 15}} onPress={() => logOut()}>
+                        <MaterialIcons name="logout" size={30} color="black" />
+                    </TouchableOpacity>
+                </View>
                 <View style={styles.search_container}>
                     <View style={styles.search}>
                         <SearchBar
@@ -43,32 +74,33 @@ export default function HomeScreen({navigation}) {
             <View style={styles.article}>
                 {
                     list !== undefined ? (
-                        <View style={styles.lecture_list}>
-                            <View style={styles.lecture_review_info}>
-                                <Text style={styles.subject_title}>{list.subject_name}</Text>
-                                <Text style={styles.profesor_name_title}>{list.profesor_name} 교수</Text>
-                                <View>
-                                    <View style={styles.lecture_score_container}>
-                                        <CustomRatingBar />
-                                        <Text style={styles.lecture_score}>4.0/50</Text>
+                        <TouchableOpacity style={{flex: 1}} onPress={() => navigation.navigate("LectureReview")}>
+                            <View style={styles.lecture_list}>
+                                <View style={styles.lecture_review_info}>
+                                    <Text style={styles.subject_title}>{list.subject_name}</Text>
+                                    <Text style={styles.profesor_name_title}>{list.profesor_name} 교수</Text>
+                                    <View>
+                                        <View style={styles.lecture_score_container}>
+                                            <CustomRatingBar />
+                                            <Text style={styles.lecture_score}>4.0/50</Text>
+                                        </View>
+                                        <Text style={styles.review_writer}>22학년도 수강자</Text>
                                     </View>
-                                    <Text style={styles.review_writer}>22학년도 수강자</Text>
+                                    
+                                    <View style={styles.lecture_review_content}>
+                                        <Text>{list.review}</Text>
+                                    </View>
                                 </View>
-                                
-                                <View style={styles.lecture_review_content}>
-                                    <Text>{list.review}</Text>
-                                </View>
-                            </View>
-                            <View style={styles.lecture_review_count}>
-                                <View style={styles.lecture_review_count_title}>
-                                    <Text>후기 수</Text>
-                                </View>
-                                <View style={styles.lecture_review_count_display}>
-                                    <Text>1</Text>
-                                </View>
-                            </View>
-                            
-                        </View> 
+                                <View style={styles.lecture_review_count}>
+                                    <View style={styles.lecture_review_count_title}>
+                                        <Text>후기 수</Text>
+                                    </View>
+                                    <View style={styles.lecture_review_count_display}>
+                                        <Text>1</Text>
+                                    </View>
+                                </View>                                
+                            </View> 
+                        </TouchableOpacity>
                     ) : (
                     <View style={styles.lecture_list_nonContest}>
                         <Text style={styles.lecture_list_nonContest_text}>강의평가한 과목이 없습니다. </Text>
@@ -84,7 +116,7 @@ export default function HomeScreen({navigation}) {
                     </View>
                 </TouchableOpacity>
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -94,12 +126,27 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF'
     },
     header: {
-        flex: 1,
+        flex: 1.15,
         backgroundColor: '#FFFFFF',
         marginLeft: 20,
         marginRight: 20,
     }, 
-
+    title_container: {
+        flex: 1.5,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    title_logo: {
+    },
+    title: {
+        color: '#007AFF',
+        fontWeight: 'bold',
+        fontSize: 35,
+    },
+    profile: {
+        flex: 1,
+        alignItems: 'flex-end'
+    },
     search_container: {
         flex: 1,
         justifyContent: 'center',   
@@ -119,7 +166,7 @@ const styles = StyleSheet.create({
         borderTopColor: '#DBDBDB',
         borderBottomColor: '#DBDBDB',
         flexDirection: 'row',
-        flex: 0.28,
+        flex: 0.34,
     },
     lecture_review_info: {
         flex: 1,

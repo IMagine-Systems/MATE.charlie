@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, TouchableOpacity, TextInput} from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, TextInput, SafeAreaView} from "react-native";
 import ReviewButton from "../../Component/button/ReviewButton";
 import ReviewTestButton from "../../Component/button/ReviewTestButton";
 import SelectRating from "../../Component/start_rating/SelectRating";
@@ -15,7 +15,7 @@ export default function WriteReview({navigation}) {
     }, [selectValue])
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <View style={styles.title_container}>
                     <View style={styles.title_logo}>
@@ -91,7 +91,7 @@ export default function WriteReview({navigation}) {
                     </View>
                 )}
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
         marginRight: 5,
     },
     lecture_select_container: {
-        flex: 0.25,
+        flex: 0.33,
         borderBottomColor: '#DBDBDB',
         borderBottomWidth: 1,
     },
