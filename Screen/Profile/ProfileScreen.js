@@ -9,6 +9,9 @@ export default function WriteReview({navigation}) {
     useEffect(() => {
     }, [selectValue])
 
+
+    //아직 레이아웃만 완료됨
+
     return (
      
         <SafeAreaView style={styles.container}>
