@@ -1,17 +1,26 @@
 import { View, Image, StyleSheet, TouchableOpacity } from "react-native";
 import {useState} from 'react';
 
-export default function SelectRating() {
-    // To set the default Star Selected
+export default function SelectRating({value, setValue}) {
     const [defaultRating, setDefaultRating] = useState(0);
-    // To set the max number of Stars
     const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
 
-    // Filled Star. You can also give the path from local
     const starImageFilled = 'https://raw.githubusercontent.com/AboutReact/sampleresource/master/star_filled.png';
-    // Empty Star. You can also give the path from local
     const starImageCorner = 'https://raw.githubusercontent.com/AboutReact/sampleresource/master/star_corner.png';
     
+    const handleChange = (text, eventName, subEventName) => {
+        setValue(prev => {
+            return {
+                ...prev,
+                [eventName]: {
+                    ...prev[eventName],
+                    [subEventName]: text
+                }
+            }
+        })
+        console.log(value);
+    }
+
     return (
         <View style={styles.customRatingBarStyle}>
             {maxRating.map((item, key) => {
@@ -19,7 +28,10 @@ export default function SelectRating() {
                 <TouchableOpacity
                     activeOpacity={0.7}
                     key={item}
-                    onPress={() => setDefaultRating(item)}
+                    onPress={() => {
+                        setDefaultRating(item);
+                        handleChange(item, "LIDData", "score")
+                    }}
                 >
                     <Image
                         style={styles.starImageStyle}

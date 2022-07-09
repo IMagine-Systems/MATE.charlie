@@ -7,13 +7,18 @@ import { doc, setDoc, arrayUnion, getDoc } from 'firebase/firestore';
 
 export default function SignUpScreen({navigation}) {
     const [value, setValue] = useState({
+        UID : 0,
         email: "",
-        pwd: "",
+        password: "",
         department: "",
-        studentId: "",
+        student_id: "",
         name: "",
+        gender: "",
+        point: 0,
 
     });
+
+    const [ genderBtn, setGenderBtn ] = useState("");
 
     const [ validation, setValidation ] = useState(false);
     
@@ -30,26 +35,34 @@ export default function SignUpScreen({navigation}) {
         })
     }
 
+    const handleButton = (text, eventName) => {
+        setGenderBtn(text);
+        setValue(prev => {
+            return {
+                ...prev,
+                [eventName] : text
+            }
+        })
+    }
 
 
     const SignUp = () => {
         validationUser();
-        const {email, pwd, department, studentId, name} = value;
+        const {UID, email, password, department, student_id, name, gender, point} = value;
         const myDoc = doc(db, 'User', 'UserInfo');
         
-        console.log('검증 : ', validation);
         if (validation === true) {
-            setDoc(myDoc, {"UserInfo": arrayUnion(value)}, {merge: true})
+            setDoc(myDoc, {"UID" : value.UID+1, "UserInfo": arrayUnion(value)}, {merge: true})
             .then(() => alert("회원 등록"))
             .catch((error) => alert(error.message));
     
-            createUserWithEmailAndPassword(auth, email, pwd)
+            createUserWithEmailAndPassword(auth, email, password)
             .then(() => {
                 alert("계정회원 가입 성공!");
                 navigation.replace("LoginScreen");
             })
             .catch((error) => {
-                alert(error.message);
+                alert("이메일 혹은 비밀번호가 틀렸습니다.");
             });
         } else {
             alert("회원가입 실패했습니다.");
@@ -63,14 +76,19 @@ export default function SignUpScreen({navigation}) {
         getDoc(myDoc)
         .then((snapshot) => {
           if (snapshot.exists) {
-            //console.log("DB에서 불러온 유저 정보 : ", snapshot.data().UserInfo);
-            snapshot.data().UserInfo.forEach(element => {
-                if (value.name !== "" && value.studentId !== "" && value.department !== "" && value.studentId !== element.studentId) {
-                    setValidation(true);
-                } else {
-                    setValidation(false);
-                }
-            });
+            if (snapshot.data().UserInfo.length === 0) {
+                value.UID = snapshot.data().UID;
+                setValidation(true);
+            } else {
+                snapshot.data().UserInfo.forEach(element => {
+                    if (value.name !== "" && value.student_id !== "" && value.department !== "" && value.student_id !== element.student_id && value.gender !== "") {
+                        value.UID = snapshot.data().UID;
+                        setValidation(true);
+                    } else {
+                        setValidation(false);
+                    }
+                });
+            }
         } else {
             alert("No Document");
           }
@@ -96,7 +114,7 @@ export default function SignUpScreen({navigation}) {
                         placeholder="Password"
                         style={styles.text_input}
                         secureTextEntry={true}
-                        onChangeText={text => handleChange(text, "pwd")}
+                        onChangeText={text => handleChange(text, "password")}
                     />
                     <TextInput
                         placeholder="학과"
@@ -106,13 +124,27 @@ export default function SignUpScreen({navigation}) {
                     <TextInput
                         placeholder="학번"
                         style={styles.text_input}            
-                        onChangeText={text => handleChange(text, "studentId")}
+                        onChangeText={text => handleChange(text, "student_id")}
                     />
                     <TextInput
                         placeholder="이름"
                         style={styles.text_input}
                         onChangeText={text => handleChange(text, "name")}
                     />
+                    <View style={styles.gender_button_container}>
+                        <TouchableOpacity
+                            style={genderBtn !== "male" ? styles.gender_button : styles.select_gender_button}
+                            onPress={() => handleButton("male", "gender")}
+                        >
+                            <Text style={genderBtn !== "male" ? null : styles.select_gender_button_text }>남성</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={genderBtn !== "female" ? styles.gender_button : styles.select_gender_button}
+                            onPress={() => handleButton("female", "gender")}
+                        >
+                            <Text style={genderBtn !== "female" ? null : styles.select_gender_button_text }>여성</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 <View style={styles.button_container}>
                     <TouchableOpacity
@@ -155,6 +187,26 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.5,
         borderBottomColor: "gray", 
         marginBottom: 25,
+    },
+    gender_button_container: {
+        flexDirection:'row'
+    },
+    gender_button: {
+        backgroundColor: '#DADADA',
+        marginRight: 10,
+        paddingHorizontal: 30,
+        paddingVertical: 15,
+        borderRadius: 10,
+    },
+    select_gender_button: {
+        backgroundColor: '#007AFF',
+        marginRight: 10,
+        paddingHorizontal: 30,
+        paddingVertical: 15,
+        borderRadius: 10,
+    },
+    select_gender_button_text: {
+        color: '#FFFFFF',
     },
     button_container: {
         flex: 1,

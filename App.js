@@ -9,6 +9,7 @@ import { useState } from 'react';
 import WriteReview from "./Screen/Review/WriteReview";
 import Title from "./Component/Title/Title";
 import LectureReview from "./Screen/Review/LectureReview";
+import ProfileScreen from "./Screen/Profile/ProfileScreen";
 
 const Stack = createStackNavigator();
 
@@ -31,6 +32,7 @@ export default function App() {
       <Stack.Screen name="Title" component={Title} />
       <Stack.Screen name="WriteReview" component={WriteReview} />
       <Stack.Screen name="LectureReview" component={LectureReview} />
+      <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
     </Stack.Navigator> 
     ) : (
     <Stack.Navigator
@@ -39,6 +41,7 @@ export default function App() {
       <Stack.Screen name="LoginScreen" component={LoginScreen} />
       <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
       <Stack.Screen name="WriteReview" component={WriteReview} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   )}
   </NavigationContainer>

@@ -1,9 +1,22 @@
 import {StyleSheet, TextInput} from "react-native";
-export default function LectureTextInput({text}) {
+export default function LectureTextInput({text, value, setValue, input, data}) {
+    const handleChange = (text, eventName, subEventName) => {
+        setValue(prev => {
+            return {
+                ...prev,
+                [eventName]: {
+                    ...prev[eventName],
+                    [subEventName]: text
+                }
+            }
+        })
+        //console.log(value);
+    }
     return (
         <TextInput
             placeholder={text} 
             style={styles.lecture_professor_input}
+            onChangeText={(text) => handleChange(text, data, input)}
         />
     )
 }

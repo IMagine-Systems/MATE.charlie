@@ -2,7 +2,7 @@ import { View, StyleSheet, Text, TouchableOpacity, TextInput} from "react-native
 import {useState} from 'react';
 
 export default function ReviewTestButton({text, selectValue}) {
-    const [select, setSelect] = useState('강의평가');
+    const [select, setSelect] = useState('강의후기');
     const selectButtonValue = (select) => {
         selectValue(select);
     }
@@ -24,16 +24,7 @@ export default function ReviewTestButton({text, selectValue}) {
                     selectButtonValue(text[1]);
                 }}
             >
-                <Text style={select === text[1] ? styles.select_button_text : styles.button_text}>중간고사</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={select === text[2] ? styles.select_button : styles.button}
-                onPress={() => {
-                    setSelect(text[2]);
-                    selectButtonValue(text[2]);
-                }}
-            >
-                <Text style={select === text[2] ? styles.select_button_text : styles.button_text}>기말고사</Text>
+                <Text style={select === text[1] ? styles.select_button_text : styles.button_text}>{text[1]}</Text>
             </TouchableOpacity>
         </View>
     );
