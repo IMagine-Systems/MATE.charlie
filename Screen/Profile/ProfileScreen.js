@@ -49,63 +49,30 @@ export default function ProfileScreen({navigation}) {
 
             <View style={styles.article}>
                 <View style={styles.lecture_select_container}>
-                    <ReviewTestButton text={['강의평가', '중간고사', '기말고사']} selectValue={setSelectValue}/>
-                    <View style={styles.lecture_input_container}>
-                        <View style={styles.input_sub}>
-                            <Text style={styles.input_text}>강의</Text>
-                            <LectureTextInput text={'강의명을 정확하게 적어주세요.'}/>
+                   <Text style={styles.my_lecture}>내기 작성한 강의</Text>
+                        <View style={styles.bottom_line_}>
+                           <View style={styles.bottom_line}>
+                           </View>
                         </View>
-                        <View style={styles.input_sub}>
-                            <Text style={styles.input_text}>교수</Text>
-                            <LectureTextInput text={'교수님 성함을 정확하게 적어주세요.'}/>
-                        </View>
-                    </View>
                 </View>
-                {selectValue === '강의평가' ? (
-                    <View style={styles.lecture_write_review_container}>
-                        <SelectRating />
-                        <View style={styles.input_sub}>
-                            <Text style={styles.input_text}>과제</Text>
-                            <ReviewButton text={['많다', '평범', '적다']} styleValue={25} />
-                        </View>
-                        <View style={styles.input_sub}>
-                            <Text style={styles.input_text}>학점 비율</Text>
-                            <ReviewButton text={['엄격', '평범', '굿']} styleValue={0} />
-                        </View>
-                        <View style={styles.input_sub}>
-                            <Text style={styles.input_text}>후기</Text>
-                            <ReviewTextInput text={"교수님 성함을 정확하게 적어주세요."} />
-                        </View>
-                        <View style={[styles.input_sub, {justifyContent: 'flex-end', marginRight: 35}]}>
-                            <TouchableOpacity style={styles.button}>
-                                <Text style={[styles.button_text, {paddingHorizontal: 5}]}>확인</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                ) : (
-                    <View style={styles.lecture_write_review_container}>
-                        <View style={styles.lecture_input_container}>
-                            <View style={styles.input_sub}>
-                                <Text style={styles.input_text}>시험 전략</Text>
-                                <ReviewTextInput text={'시험전략을 적어주세요.'}/>
-                            </View>
-                            <View style={styles.input_sub}>
-                                <Text style={styles.input_text}>문제 유형</Text>
-                                <ReviewTextInput text={'문제 유형을 정확하게 적어주세요.'}/>
-                            </View>
-                            <View style={styles.input_sub}>
-                                <Text style={styles.input_text}>문제 예시</Text>
-                                <ReviewTextInput text={'문제 예시를 정확하게 적어주세요.'}/>
-                            </View>
-                            <View style={[styles.input_sub, {justifyContent: 'flex-end', marginRight: 35}]}>
-                                <TouchableOpacity style={styles.button}>
-                                    <Text style={[styles.button_text, {paddingHorizontal: 5}]}>확인</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                )}
+
+                <View style={styles.lecture_container}>
+                    
+                      <Text style={styles.lecture_tittle}>간호관리학2</Text>
+                      <Text style={styles.lecture_tittle}>000 교수</Text>
+                      <Text style={styles.lecture_tittle}>별</Text>      
+                      <Text style={styles.lecture_review_tiny}>별</Text> 
+                      <Text style={styles.lecture_review_tiny}>별</Text>   
+                      <View style={styles.asd}>
+                      <View style={styles.bottom_line_}>
+                           <View style={styles.bottom_line}></View>
+                      </View>
+                    </View>             
             </View>
+        </View>
+
+       
+            
         </SafeAreaView>
     );
 }
@@ -114,6 +81,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF'
+    },
+    my_lecture:{
+        fontWeight: 'bold',
+        fontSize: 20,
+        marginLeft:20,
     },
     header: {
         flex: 0.32,
@@ -143,32 +115,40 @@ const styles = StyleSheet.create({
         marginRight: 5,
     },
     lecture_select_container: {
-        flex: 0.33,
+        flex: 0.1,
         borderBottomColor: '#DBDBDB',
         borderBottomWidth: 1,
-    },
-    button: {
-        backgroundColor: '#F2F2F2',
-        marginRight: 10,
-        padding: 8,
-        borderRadius: 15,
         justifyContent: 'center',
     },
-    button_text: {
-        fontSize: 18,
+    bottom_line_: {
+        flexDirection:'row',
+        alignItems:'flex-end',
     },
-    input_sub: {
-        flexDirection: 'row',
-        marginBottom: 10,
-        marginTop: 15,
-        alignItems: 'center',
+    bottom_line: {
+    borderBottomColor: 'black',
+    borderBottomWidth: 1,
     },
-    input_text: {
-        marginHorizontal: 10,
+    lecture_container: {
+    flex:0.2,
+    justifyContent: 'center',
+    },
+    lecture_tittle:{
+        fontWeight: 'bold',
+        fontSize: 20,
+        marginLeft:20,
+    },
+    star: {
+        backgroundColor: 'yellow'
+    },
+    lecture_review_tiny: {
+        fontWeight: 'bold',
         fontSize: 13,
-        color: '#5B5656'
+        marginLeft:20,
     },
-    lecture_write_review_container: {
-        flex: 1,
-    }
+    asd: {
+        flex: 0.1,
+        borderBottomColor: '#DBDBDB',
+        borderBottomWidth: 1,
+        justifyContent: 'center',
+    },
 });
