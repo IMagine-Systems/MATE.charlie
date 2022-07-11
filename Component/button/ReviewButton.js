@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     select_button: {
-        backgroundColor: '#606060',
+        backgroundColor: '#007AFF',
         marginRight: 10,
         padding: 8,
         borderRadius: 15,

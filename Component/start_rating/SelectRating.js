@@ -52,10 +52,12 @@ const styles = StyleSheet.create({
     customRatingBarStyle: {
         flexDirection: 'row',
         marginTop: 5,
+        alignItems: 'center',
+        height: 50,
       },
       starImageStyle: {
-        width: 20,
-        height: 20,
+        width: 30,
+        height: 30,
         resizeMode: 'cover',
       },
 });
