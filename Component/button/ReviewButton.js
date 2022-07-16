@@ -14,7 +14,6 @@ export default function ReviewButton({text, value, setValue, styleValue}) {
                 }
             }
         })
-        console.log(value);
     }
 
     return (

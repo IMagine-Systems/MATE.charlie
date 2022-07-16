@@ -16,7 +16,10 @@ export default function LectureTextInput({text, value, setValue, input, data}) {
         <TextInput
             placeholder={text} 
             style={styles.lecture_professor_input}
-            onChangeText={(text) => handleChange(text, data, input)}
+            onChangeText={(text) => {
+                handleChange(text, data, input);
+                handleChange(text, "TestData", input);
+            }}
         />
     )
 }

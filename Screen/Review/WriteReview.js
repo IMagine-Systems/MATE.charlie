@@ -7,17 +7,20 @@ import SelectRating from "../../Component/start_rating/SelectRating";
 import LectureTextInput from "../../Component/textInput/LectureTextInput";
 import ReviewTextInput from "../../Component/textInput/ReviewTextInput";
 import LevelButton from "../../Component/button/LevelButton";
-import { db } from "../../db/DatabaseConfig/firebase";
-import { doc, setDoc, arrayUnion, getDoc } from 'firebase/firestore';
-
+import { db, auth } from "../../db/DatabaseConfig/firebase";
+import { doc, setDoc, arrayUnion, getDoc, connectFirestoreEmulator } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 export default function WriteReview({navigation}) {
+
+    //const [ myEmail, setMyEmail ] = useState("");
+    const [ myUid, setMyUid ] = useState("");
 
     const [value, setValue] = useState({
         UID : 0,
         LIDData: {
             subject: "",
             professor_name: "",
-            code: 1000,
+            code: 0,
             day: "",
             score: 3.0,
             difficulty: "",
@@ -26,15 +29,18 @@ export default function WriteReview({navigation}) {
         TestData: {
             subject: "",
             professor_name: "",
-            code: 1000,
+            code: 0,
+            test_tip: "",
+            test_type: "",
+            test_ex: "",
             day: "",
-            testReview: [],
         },
 
     });
     
     useEffect(() => {
         setDate();
+        getUid();
     }, []);
 
     const handleChange = (text, eventName, subEventName) => {
@@ -47,7 +53,41 @@ export default function WriteReview({navigation}) {
                 }
             }
         })
-        console.log(value);
+    }
+
+    const handleChangeUid = (text, eventName) => {
+        setValue(prev => {
+
+            return {
+                ...prev,
+                [eventName]: text,
+            }
+        })
+    } 
+
+    const getUid = () => {
+        const myDoc = doc(db, "User", "UserInfo");
+        let uid;
+        let myEmail;
+        onAuthStateChanged(auth, (user) => {
+            myEmail = user.email; 
+        });
+        
+        getDoc(myDoc)
+        .then((snapshot) => {
+            if (snapshot.exists) {
+                snapshot.data().UserInfo.map((userDatas) => {
+                    if (userDatas.email === myEmail) {
+                        uid = userDatas.UID;
+                        setMyUid(userDatas.UID);
+                        handleChangeUid(uid, "UID");
+                    }
+                });
+            } else {
+                console.log("No Document!");
+            }
+        })
+        .catch((error) => console.log(error.message));
     }
 
     const setDate = () => {
@@ -58,13 +98,18 @@ export default function WriteReview({navigation}) {
 
         let day = year + '/' + month + '/' + date;
         handleChange(day, "LIDData", "day");
+        handleChange(day, "TestData", "day");
     }
 
     const reviewUpdate = () => {
         const myDoc = doc(db, 'Review', 'ReviewData');
+        getUid();
         setDate();
         setDoc(myDoc, {"ReviewData": arrayUnion(value)}, {merge: true})
-        .then(() => alert("후기 등록 완료"))
+        .then(() => {   
+            alert("후기 등록 완료");
+            navigation.navigate("HomeScreen");
+        })
         .catch((error) => alert(error.message));
     }
 
@@ -139,20 +184,25 @@ export default function WriteReview({navigation}) {
                     </View>
                 </View>
             </ProgressStep>
-            <ProgressStep label="시험후기" onSubmit={reviewUpdate} finishBtnText="완료" previousBtnText="이전">
+            <ProgressStep 
+                label="시험후기"
+                onSubmit={reviewUpdate}
+                finishBtnText="완료"
+                previousBtnText="이전"
+            >
                 <View style={styles.lecture_write_review_container}>
                     <View style={styles.lecture_input_container}>
                         <View style={styles.input_sub}>
                             <Text style={styles.input_text}>시험 전략</Text>
-                            <ReviewTextInput text={'시험전략을 적어주세요.'}/>
+                            <ReviewTextInput text={'시험전략을 적어주세요.'}  value={value} setValue={setValue} input={"test_tip"} data={"TestData"}/>
                         </View>
                         <View style={styles.input_sub}>
                             <Text style={styles.input_text}>문제유형</Text>
-                            <LevelButton text={['객관식', '주관식', '서술형', '실습']} styleValue={0}/>
+                            <LevelButton text={['객관식', '주관식', '서술형', '실습']} styleValue={0} value={value} setValue={setValue} input={"test_type"} data={"TestData"} />
                         </View>
                         <View style={styles.input_sub}>
                             <Text style={styles.input_text}>문제 예시</Text>
-                            <ReviewTextInput text={'문제 예시를 정확하게 적어주세요.'} value={value} setValue={setValue} />
+                            <ReviewTextInput text={'문제 예시를 정확하게 적어주세요.'} value={value} setValue={setValue} input={"test_ex"} data={"TestData"} />
                         </View>
                     </View>
                 </View>

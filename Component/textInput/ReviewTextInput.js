@@ -11,7 +11,6 @@ export default function ReviewTextInput({text, value, setValue, input, data}) {
                 }
             }
         })
-        //console.log(value);
     }
 
     return (
