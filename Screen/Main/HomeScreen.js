@@ -1,15 +1,32 @@
 import { View, StyleSheet, Text, TouchableOpacity, Alert, SafeAreaView } from "react-native";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SearchBar } from 'react-native-elements';
 import CustomRatingBar from "../../Component/start_rating/CustomRatingBar";
 import { FontAwesome } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
+import { db, auth } from "../../db/DatabaseConfig/firebase";
+import { doc, setDoc, arrayUnion, getDoc } from 'firebase/firestore';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function HomeScreen({navigation}) {
     const [search, setSearch] = useState("");
     const [list, setList] = useState([]);
-    
+    const [reviewCount, setReviewCount] = useState(0);
+    const [reviewDatas, setReviewDatas] = useState([]);
+
+    const myDoc = doc(db, 'Review', 'ReviewData');
+
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        getReviewData();
+    }, [])
+
+    useEffect(() => {
+        getReviewData();
+    }, [isFocused])
+
     const lecture_list = require('./Lecture.json').lecture_list;
 
     const searchLecture = (text) => {
@@ -20,6 +37,105 @@ export default function HomeScreen({navigation}) {
             setSearch('');
             setList([]);
         }
+    }
+
+    const getReviewData = () => {
+        getDoc(myDoc)
+        .then((snapshot) => {
+            if (snapshot.exists) {
+                setReviewCount(snapshot.data().ReviewData.length);
+                setReviewDatas(snapshot.data().ReviewData.reverse());
+            } else {
+                console.log("No Document!");
+            }
+        })
+        .catch((error) => console.log(error.message));
+    }
+    
+    const showCurrentReview = () => {
+        if (reviewCount === 0) {
+            return (
+                <View style={styles.lecture_list_nonContest}>
+                    <Text style={styles.lecture_list_nonContest_text}>강의평가한 과목이 없습니다.</Text>
+                </View>
+            );
+        } else {
+            return (
+                reviewDatas.slice(0, 3).map((reviewData) => (
+                    <View style={{flex:0.5, justifyContent: 'center'}}>
+                        <TouchableOpacity style={styles.review}>
+                            <View style={styles.lecture_list}>
+                                <View style={styles.lecture_review_info}>
+                                    <View>
+                                        <View style={styles.lecture_score_container}>
+                                            <CustomRatingBar />
+                                            <View style={styles.review_writer_studentID}>
+                                                <Text style={styles.review_writer}>22학년도 수강자</Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    
+                                    <View style={styles.lecture_score_range}>
+                                        <Text>학점 비율</Text>
+                                        <View style={styles.lecture_score_range_background}>
+                                            <Text style={{color: '#FFFFFF'}}>{reviewData.LIDData.difficulty}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.lecture_review_content}>
+                                        <Text>후기</Text>
+                                        <Text style={{marginLeft: 45}}>{reviewData.LIDData.review}</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.declartion_container}>
+                                    <TouchableOpacity style={styles.declartion_button}>
+                                        <Text>신고</Text>
+                                    </TouchableOpacity>
+                                </View>                                
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                ))
+            );
+        }
+    }
+
+    const showReview = () => {
+        return (
+            reviewDatas.map((reviewData) => reviewData.TestData.subject === search ? (
+                <View style={{flex:0.5, justifyContent: 'center'}}>
+                    <TouchableOpacity style={styles.review}>
+                        <View style={styles.lecture_list}>
+                            <View style={styles.lecture_review_info}>
+                                <View>
+                                    <View style={styles.lecture_score_container}>
+                                        <CustomRatingBar />
+                                        <View style={styles.review_writer_studentID}>
+                                            <Text style={styles.review_writer}>22학년도 수강자</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                                
+                                <View style={styles.lecture_score_range}>
+                                    <Text>학점 비율</Text>
+                                    <View style={styles.lecture_score_range_background}>
+                                        <Text style={{color: '#FFFFFF'}}>{reviewData.LIDData.difficulty}</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.lecture_review_content}>
+                                    <Text>후기</Text>
+                                    <Text style={{marginLeft: 45}}>{reviewData.LIDData.review}</Text>
+                                </View>
+                            </View>
+                            <View style={styles.declartion_container}>
+                                <TouchableOpacity style={styles.declartion_button}>
+                                    <Text>신고</Text>
+                                </TouchableOpacity>
+                            </View>                                
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            ) : null
+        ));
     }
 
     return (
@@ -55,47 +171,8 @@ export default function HomeScreen({navigation}) {
                         />
                     </View>
                 </View>
-                {
-                    0 < list.length ? list.map( element => (
-                        <View style={{flex:0.5, justifyContent: 'center'}}>
-                            <TouchableOpacity style={styles.review}>
-                                <View style={styles.lecture_list}>
-                                    <View style={styles.lecture_review_info}>
-                                        <View>
-                                            <View style={styles.lecture_score_container}>
-                                                <CustomRatingBar />
-                                                <View style={styles.review_writer_studentID}>
-                                                    <Text style={styles.review_writer}>22학년도 수강자</Text>
-                                                </View>
-                                            </View>
-                                        </View>
-                                        
-                                        <View style={styles.lecture_score_range}>
-                                            <Text>학점 비율</Text>
-                                            <View style={styles.lecture_score_range_background}>
-                                                <Text style={{color: '#FFFFFF'}}>힘들다</Text>
-                                            </View>
-                                        </View>
-                                        <View style={styles.lecture_review_content}>
-                                            <Text>후기</Text>
-                                            <Text style={{marginLeft: 45}}>{element.review}</Text>
-                                        </View>
-                                    </View>
-                                    <View style={styles.declartion_container}>
-                                        <TouchableOpacity style={styles.declartion_button}>
-                                            <Text>신고</Text>
-                                        </TouchableOpacity>
-                                    </View>                                
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                    )) : (
-                        <View style={styles.lecture_list_nonContest}>
-                            <Text style={styles.lecture_list_nonContest_text}>강의평가한 과목이 없습니다. </Text>
-                        </View>
-                    )
-                }
-                
+                {search === "" ? showCurrentReview() : showReview()}
+
             </View>
             <View style={styles.sub_container}>
                 <TouchableOpacity style={{width: 40}} onPress={() => navigation.navigate("WriteReview")}>

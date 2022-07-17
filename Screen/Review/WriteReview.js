@@ -10,6 +10,7 @@ import LevelButton from "../../Component/button/LevelButton";
 import { db, auth } from "../../db/DatabaseConfig/firebase";
 import { doc, setDoc, arrayUnion, getDoc, connectFirestoreEmulator } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+
 export default function WriteReview({navigation}) {
 
     //const [ myEmail, setMyEmail ] = useState("");
@@ -42,6 +43,7 @@ export default function WriteReview({navigation}) {
         setDate();
         getUid();
     }, []);
+
 
     const handleChange = (text, eventName, subEventName) => {
         setValue(prev => {
