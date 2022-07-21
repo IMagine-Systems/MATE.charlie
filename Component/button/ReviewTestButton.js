@@ -2,7 +2,7 @@ import { View, StyleSheet, Text, TouchableOpacity, TextInput} from "react-native
 import {useState} from 'react';
 
 export default function ReviewTestButton({text, selectValue}) {
-    const [select, setSelect] = useState('강의후기');
+    const [select, setSelect] = useState('강의 평가');
     const selectButtonValue = (select) => {
         selectValue(select);
     }

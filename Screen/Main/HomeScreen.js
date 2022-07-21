@@ -63,27 +63,26 @@ export default function HomeScreen({navigation}) {
             return (
                 reviewDatas.slice(0, 3).map((reviewData) => (
                     <View style={{flex:0.5, justifyContent: 'center'}}>
-                        <TouchableOpacity style={styles.review}>
+                        <TouchableOpacity 
+                            style={styles.review}
+                            onPress={() => navigation.navigate("ReviewInfo", reviewData)}
+                        >
                             <View style={styles.lecture_list}>
                                 <View style={styles.lecture_review_info}>
-                                    <View>
-                                        <View style={styles.lecture_score_container}>
-                                            <CustomRatingBar />
-                                            <View style={styles.review_writer_studentID}>
-                                                <Text style={styles.review_writer}>22학년도 수강자</Text>
-                                            </View>
-                                        </View>
-                                    </View>
                                     
-                                    <View style={styles.lecture_score_range}>
-                                        <Text>학점 비율</Text>
-                                        <View style={styles.lecture_score_range_background}>
-                                            <Text style={{color: '#FFFFFF'}}>{reviewData.LIDData.difficulty}</Text>
+                                    <View style={{marginBottom: 5}}>
+                                        <Text style={{fontSize: 22, marginBottom: 8}}>{reviewData.TestData.subject}</Text>
+                                        <Text style={{fontSize: 17}}>{reviewData.TestData.professor_name} 교수</Text>
+                                    </View>
+                                    <View style={styles.lecture_score_container}>
+                                        <CustomRatingBar data={reviewData.LIDData}/>
+                                        <View style={styles.review_writer_studentID}>
+                                            <Text style={styles.review_writer}>22학년도 수강자</Text>
                                         </View>
                                     </View>
+                                
                                     <View style={styles.lecture_review_content}>
-                                        <Text>후기</Text>
-                                        <Text style={{marginLeft: 45}}>{reviewData.LIDData.review}</Text>
+                                        <Text>{reviewData.LIDData.review}</Text>
                                     </View>
                                 </View>
                                 <View style={styles.declartion_container}>
@@ -103,12 +102,15 @@ export default function HomeScreen({navigation}) {
         return (
             reviewDatas.map((reviewData) => reviewData.TestData.subject === search ? (
                 <View style={{flex:0.5, justifyContent: 'center'}}>
-                    <TouchableOpacity style={styles.review}>
+                    <TouchableOpacity 
+                        style={styles.review}
+                        onPress={() => navigation.navigate("ReviewInfo", reviewData)}
+                    >
                         <View style={styles.lecture_list}>
                             <View style={styles.lecture_review_info}>
                                 <View>
                                     <View style={styles.lecture_score_container}>
-                                        <CustomRatingBar />
+                                        <CustomRatingBar data={reviewData.LIDData}/>
                                         <View style={styles.review_writer_studentID}>
                                             <Text style={styles.review_writer}>22학년도 수강자</Text>
                                         </View>

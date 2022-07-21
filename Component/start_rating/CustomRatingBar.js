@@ -1,9 +1,9 @@
 import { View, Image, StyleSheet } from "react-native";
 import {useState} from 'react';
 
-export default function CustomRatingBar() {
+export default function CustomRatingBar({data}) {
     // To set the default Star Selected
-    const [defaultRating, setDefaultRating] = useState(4);
+    const [defaultRating, setDefaultRating] = useState(data.score);
     // To set the max number of Stars
     const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
 

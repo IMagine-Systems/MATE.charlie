@@ -10,6 +10,7 @@ import WriteReview from "./Screen/Review/WriteReview";
 import Title from "./Component/Title/Title";
 import LectureReview from "./Screen/Review/LectureReview";
 import ProfileScreen from "./Screen/Profile/ProfileScreen";
+import ReviewInfo from "./Screen/Review/ReviewInfo";
 
 const Stack = createStackNavigator();
 
@@ -33,6 +34,7 @@ export default function App() {
       <Stack.Screen name="WriteReview" component={WriteReview} />
       <Stack.Screen name="LectureReview" component={LectureReview} />
       <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+      <Stack.Screen name="ReviewInfo" component={ReviewInfo} />
     </Stack.Navigator> 
     ) : (
     <Stack.Navigator
