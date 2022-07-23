@@ -51,11 +51,6 @@ export default function ReviewInfo({navigation, route}) {
                                 <View style={styles.review_writer_studentID}>
                                     <CustomRatingBar data={route.params.LIDData}/>
                                     <Text style={styles.review_writer}>22학년도 수강자</Text>
-                                    <View style={styles.declartion_container}>
-                                        <TouchableOpacity style={styles.declartion_button}>
-                                            <Text>신고</Text>
-                                        </TouchableOpacity>
-                                    </View>  
                                 </View>
                                 <View style={{flexDirection: 'row', marginLeft: 30, marginTop: 15, alignItems: 'center'}}>
                                     <Text style={{fontSize: 16, marginRight: 20}}>학점 비율</Text>                            
@@ -79,12 +74,7 @@ export default function ReviewInfo({navigation, route}) {
                             </View>
                             <View style={{width: "100%", height: 200, borderTopWidth: 0.3, borderBottomWidth: 0.3, marginTop: 15, justifyContent: 'center'}}>
                                 <View style={styles.review_writer_studentID}>
-                                    <Text style={styles.review_writer}>22학년도 수강자</Text>
-                                    <View style={styles.declartion_container}>
-                                        <TouchableOpacity style={styles.declartion_button}>
-                                            <Text>신고</Text>
-                                        </TouchableOpacity>
-                                    </View>  
+                                    <Text style={styles.review_writer}>22학년도 수강자</Text>                                    
                                 </View>
                                 <View style={{flexDirection: 'row', marginLeft: 30, marginTop: 15, alignItems: 'center'}}>
                                     <Text style={{fontSize: 16, marginRight: 20}}>시험 전략</Text>                            

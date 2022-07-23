@@ -1,20 +1,131 @@
-import { View, StyleSheet, Text, TouchableOpacity, SafeAreaView, Alert} from "react-native";
-import ReviewButton from "../../Component/button/ReviewButton";
-import ReviewTestButton from "../../Component/button/ReviewTestButton";
-import SelectRating from "../../Component/start_rating/SelectRating";
-import LectureTextInput from "../../Component/textInput/LectureTextInput";
-import ReviewTextInput from "../../Component/textInput/ReviewTextInput";
-import { auth } from "../../db/DatabaseConfig/firebase";
+import { View, StyleSheet, Text, RefreshControl, TouchableOpacity, SafeAreaView, Alert,} from "react-native";
 import { signOut } from "firebase/auth";
 import { MaterialIcons } from '@expo/vector-icons';
 import {useState, useEffect} from 'react';
+import { db, auth } from "../../db/DatabaseConfig/firebase";
+import { doc, setDoc, arrayUnion, getDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import React from 'react';
 
 
 export default function ProfileScreen({navigation}) {
-    const [selectValue, setSelectValue] = useState('강의평가');
+    const [ myUid, setMyUid ] = useState("");
+    const [ myReviews, setMyReviews ] = useState([]);
+    const myDocUser = doc(db, "User", "UserInfo");
+    const myDocReview = doc(db, "Review", "ReviewData");
 
     useEffect(() => {
-    }, [selectValue])
+        getUid();
+        getReviewData();
+    }, []);
+    
+
+    const getUid = () => {
+        let uid;
+        let myEmail;
+        onAuthStateChanged(auth, (user) => {
+            myEmail = user.email; 
+        });
+        
+        getDoc(myDocUser)
+        .then((snapshot) => {
+            if (snapshot.exists) {
+                snapshot.data().UserInfo.map((userDatas) => {
+                    if (userDatas.email === myEmail) {
+                        uid = userDatas.UID;
+                        setMyUid(userDatas.UID);
+                    }
+                });
+            } else {
+                console.log("No Document!");
+            }
+        })
+        .catch((error) => console.log(error.message));
+    }
+
+    const getReviewData = () => {
+        getDoc(myDocReview)
+        .then((snapshot) => {
+            if (snapshot.exists) {
+                return (
+                    snapshot.data().ReviewData.map((reviewData) => {
+                        if (reviewData.UID === myUid) {                            
+                            setMyReviews((myReviews) => [...myReviews, reviewData.LIDData]);
+                            console.log("reviews 1 : " , myReviews);
+                        } else {                                            
+                        }
+                    })
+                );
+            } else {
+                console.log("No Document!");
+            }
+        })
+        .catch((error) => console.log(error.message));
+    }
+
+    const showMyReview1 = () => {
+        getDoc(myDocReview)
+        .then((snapshot) => {
+            if (snapshot.exists) {
+                snapshot.data().ReviewData.map((reviewData) => reviewData.UID === myUid ? (                            
+                    <View 
+                        style={styles.lecture_container}
+                    >
+                        <Text style={styles.lecture_tittle}>{reviewData.LIDData.subject}</Text>
+                        <Text style={styles.lecture_tittle}>{reviewData.LIDData.professor_name} 교수</Text>
+                        <Text style={styles.lecture_tittle}>별</Text>      
+                        <Text style={styles.lecture_review_tiny}>별</Text> 
+                        <Text style={styles.lecture_review_tiny}>별</Text>   
+                        <View style={styles.asd}>
+                            <View style={styles.bottom_line_}>
+                                <View style={styles.bottom_line}></View>
+                            </View>
+                        </View>
+                    </View>
+                    ) : (
+                        <View 
+                            style={styles.lecture_container}
+                        >
+                            <Text style={styles.lecture_tittle}>00</Text>
+                            <Text style={styles.lecture_tittle}>00 교수</Text>
+                            <Text style={styles.lecture_tittle}>별</Text>      
+                            <Text style={styles.lecture_review_tiny}>별</Text> 
+                            <Text style={styles.lecture_review_tiny}>별</Text>   
+                            <View style={styles.asd}>
+                                <View style={styles.bottom_line_}>
+                                    <View style={styles.bottom_line}></View>
+                                </View>
+                            </View>
+                        </View>
+                    )
+                )
+            } else {
+                console.log("No Document!");
+            }
+        })
+        .catch((error) => console.log(error.message));
+    }
+
+    const showMyReview = () => {
+        return(
+            myReviews.map(review => (
+                <View 
+                    style={styles.lecture_container}
+                >
+                    <Text style={styles.lecture_tittle}>{review.subject}</Text>
+                    <Text style={styles.lecture_tittle}>{review.professor_name} 교수</Text>
+                    <Text style={styles.lecture_tittle}>별</Text>      
+                    <Text style={styles.lecture_review_tiny}>별</Text> 
+                    <Text style={styles.lecture_review_tiny}>별</Text>   
+                    <View style={styles.asd}>
+                        <View style={styles.bottom_line_}>
+                            <View style={styles.bottom_line}></View>
+                        </View>
+                    </View>
+                </View>
+            ))
+        );
+    }
 
     const logOut = () => {
         Alert.alert(
@@ -29,6 +140,8 @@ export default function ProfileScreen({navigation}) {
             ]
         );
     }
+
+
 
     return (
         <SafeAreaView style={styles.container}>
@@ -55,23 +168,9 @@ export default function ProfileScreen({navigation}) {
                            </View>
                         </View>
                 </View>
-
-                <View style={styles.lecture_container}>
-                    
-                      <Text style={styles.lecture_tittle}>간호관리학2</Text>
-                      <Text style={styles.lecture_tittle}>000 교수</Text>
-                      <Text style={styles.lecture_tittle}>별</Text>      
-                      <Text style={styles.lecture_review_tiny}>별</Text> 
-                      <Text style={styles.lecture_review_tiny}>별</Text>   
-                      <View style={styles.asd}>
-                      <View style={styles.bottom_line_}>
-                           <View style={styles.bottom_line}></View>
-                      </View>
-                    </View>             
+                
+                {showMyReview()}        
             </View>
-        </View>
-
-       
             
         </SafeAreaView>
     );

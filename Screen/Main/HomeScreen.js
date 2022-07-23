@@ -8,26 +8,102 @@ import { StatusBar } from 'expo-status-bar';
 import { db, auth } from "../../db/DatabaseConfig/firebase";
 import { doc, setDoc, arrayUnion, getDoc } from 'firebase/firestore';
 import { useIsFocused } from '@react-navigation/native';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export default function HomeScreen({navigation}) {
     const [search, setSearch] = useState("");
     const [list, setList] = useState([]);
     const [reviewCount, setReviewCount] = useState(0);
     const [reviewDatas, setReviewDatas] = useState([]);
+    const [ myUid, setMyUid ] = useState("");
 
+    // 신고
+    const [value, setValue] = useState({
+        FalseReport : {
+            UID: 0,
+            RUID: 0,
+            LIDData: {
+              
+            },
+            TestData: {
+                
+            },
+        },
+        Slang: {
+            UID: 0,
+            RUID: 0,
+            LIDData: {
+                
+            },
+            TestData: {
+                
+            },
+        },
+        Disrespect: {
+            UID: 0,
+            RUID: 0,
+            LIDData: {
+            },
+            TestData: {
+            },
+        },
+    });
+    const KEY_FALSEREPORT = "허위 작성";
+    const KEY_DISRESPECT = "성의 없음";
+    const KEY_SLANG = "비속어";
+
+    const myDocUser = doc(db, "User", "UserInfo");
     const myDoc = doc(db, 'Review', 'ReviewData');
+    const myDocDeclation = doc(db, "Declaration", "DeclarationInfo");
 
     const isFocused = useIsFocused();
 
     useEffect(() => {
+        getUid();
         getReviewData();
-    }, [])
+    }, []);
 
     useEffect(() => {
         getReviewData();
-    }, [isFocused])
+    }, [isFocused]);
 
     const lecture_list = require('./Lecture.json').lecture_list;
+
+    const getUid = () => {
+        let uid;
+        let myEmail;
+        onAuthStateChanged(auth, (user) => {
+            myEmail = user.email; 
+        });
+        
+        getDoc(myDocUser)
+        .then((snapshot) => {
+            if (snapshot.exists) {
+                snapshot.data().UserInfo.map((userDatas) => {
+                    if (userDatas.email === myEmail) {
+                        uid = userDatas.UID;
+                        setMyUid(userDatas.UID);
+                    }
+                });
+            } else {
+                console.log("No Document!");
+            }
+        })
+        .catch((error) => console.log(error.message));
+    }
+
+
+    const handleChange = (text, eventName, subEventName) => {
+        setValue(prev => (
+            {
+                ...prev,
+                [eventName]: {
+                    ...prev[eventName],
+                    [subEventName]: text
+                }
+            }
+        ))
+    }
 
     const searchLecture = (text) => {
         if (text) {
@@ -86,7 +162,10 @@ export default function HomeScreen({navigation}) {
                                     </View>
                                 </View>
                                 <View style={styles.declartion_container}>
-                                    <TouchableOpacity style={styles.declartion_button}>
+                                    <TouchableOpacity 
+                                        style={styles.declartion_button}
+                                        onPress={() => quit(reviewData)}
+                                    >
                                         <Text>신고</Text>
                                     </TouchableOpacity>
                                 </View>                                
@@ -129,7 +208,10 @@ export default function HomeScreen({navigation}) {
                                 </View>
                             </View>
                             <View style={styles.declartion_container}>
-                                <TouchableOpacity style={styles.declartion_button}>
+                                <TouchableOpacity 
+                                    style={styles.declartion_button}
+                                    onPress={() => quit(reviewData)}
+                                >
                                     <Text>신고</Text>
                                 </TouchableOpacity>
                             </View>                                
@@ -138,6 +220,63 @@ export default function HomeScreen({navigation}) {
                 </View>
             ) : null
         ));
+    }
+
+
+    const setDeclation = (find, reviewData) => {
+        if (find === KEY_FALSEREPORT) {
+            handleChange(myUid, "FalseReport", "UID");
+            handleChange(reviewData.UID, "FalseReport", "RUID");
+            handleChange(reviewData.LIDData, "FalseReport", "LIDData");
+            handleChange(reviewData.TestData, "FalseReport", "TestData");
+            //console.log("신고 들어왔어요! : ", value);
+            declationUpdate();
+
+        } else if (find === KEY_SLANG) {
+            handleChange(myUid, "Slang", "UID");
+            handleChange(reviewData.UID, "Slang", "RUID");
+            handleChange(reviewData.LIDData, "Slang", "LIDData");
+            handleChange(reviewData.TestData, "Slang", "TestData");
+            //console.log("신고 들어왔어요! : ", value);
+            declationUpdate();
+        } else if (find === KEY_DISRESPECT) {
+            handleChange(myUid, "Disrespect", "UID");
+            handleChange(reviewData.UID, "Disrespect", "RUID");
+            handleChange(reviewData.LIDData, "Disrespect", "LIDData");
+            handleChange(reviewData.TestData, "Disrespect", "TestData");
+            //console.log("신고 들어왔어요! : ", value);
+            declationUpdate();
+        }
+    }
+
+    const declationUpdate = () => {
+        setDoc(myDocDeclation, {"DeclarationInfo": arrayUnion(value)}, {merge: true})
+        .then(() => {   
+            alert("신고 완료");
+        })
+        .catch((error) => alert(error.message));
+    }
+
+    const quit = (reviewData) => {
+        Alert.alert(
+            "신고",
+            "",
+            [
+              {
+                text: "취소",
+                style: "cancel"
+              },
+              { text: KEY_FALSEREPORT, 
+                onPress: () => setDeclation(KEY_FALSEREPORT, reviewData)
+                }, {
+                    text: KEY_SLANG,
+                    onPress: () => setDeclation(KEY_SLANG, reviewData)
+                }, {
+                    text: KEY_DISRESPECT,
+                    onPress: () => setDeclation(KEY_DISRESPECT, reviewData)
+                }
+            ]
+        );
     }
 
     return (

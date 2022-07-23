@@ -35,10 +35,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'row',
         marginTop: 5,
-      },
-      starImageStyle: {
+    },
+    starImageStyle: {
         width: 15,
         height: 15,
         resizeMode: 'cover',
-      },
+    },
 });
