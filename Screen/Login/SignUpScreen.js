@@ -4,6 +4,7 @@ import {auth} from '../../db/DatabaseConfig/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { db } from '../../db/DatabaseConfig/firebase';
 import { doc, setDoc, arrayUnion, getDoc } from 'firebase/firestore';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function SignUpScreen({navigation}) {
     const [value, setValue] = useState({
@@ -100,8 +101,14 @@ export default function SignUpScreen({navigation}) {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
+            <View style={styles.header}>           
                 <Text style={styles.title}>회원가입</Text>
+                <TouchableOpacity 
+                    style={styles.back_icon}       
+                    onPress={() => navigation.navigate("LoginScreen")}          
+                >
+                    <Ionicons name="arrow-back-outline" size={32} color="black" />
+                </TouchableOpacity>                
             </View>
             <View style={styles.input_container}>
                 <View style={styles.text_input_container}>
@@ -165,8 +172,11 @@ const styles = StyleSheet.create({
     }, 
     header: {
         flex: 0.3,
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
+        position: 'relative',
+
     },
     title: {
         fontSize: 32,
@@ -187,6 +197,13 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.5,
         borderBottomColor: "gray", 
         marginBottom: 25,
+    },
+    back_icon: {
+        position: 'absolute',                
+        flexDirection: 'row',                    
+        width: '100%',
+        justifyContent: 'flex-end',
+        right: 30,
     },
     gender_button_container: {
         flexDirection:'row'
