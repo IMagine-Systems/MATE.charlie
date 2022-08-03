@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import { ProgressSteps, ProgressStep } from 'react-native-progress-steps';
 import { Ionicons } from '@expo/vector-icons';
 import {useState, useEffect} from 'react';
@@ -117,99 +117,102 @@ export default function WriteReview({navigation}) {
 
   return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-            <View style={styles.title_container}>
-                <View style={styles.title_logo}>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate("HomeScreen")}
-                    >
-                        <Text style={styles.title}>MATE</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.profile}>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate("ProfileScreen")}
-                    >
-                        <Ionicons name="person-circle" size={38} color="#A6CFFF" />
-                    </TouchableOpacity>
+        <KeyboardAvoidingView style={styles.container} behavior={"padding"}>
+            <View style={styles.header}>
+                <View style={styles.title_container}>
+                    <View style={styles.title_logo}>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate("HomeScreen")}
+                        >
+                            <Text style={styles.title}>MATE</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.profile}>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate("ProfileScreen")}
+                        >
+                            <Ionicons name="person-circle" size={38} color="#A6CFFF" />
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
-        </View>
-        <ProgressSteps 
-            activeStepIconBorderColor="#007AFF"
-            progressBarColor="#007AFF"
-            completedProgressBarColor="#007AFF"
-            activeStepIconColor="#007AFF"
-            completedStepIconColor="#007AFF"
-            activeStepNumColor="#FFFFFF"
-            activeLabelColor="#007AFF"
-        >
-            <ProgressStep label="강의후기">
-                <View style={styles.article}>
-                    <View style={styles.lecture_select_container}>
+            <ProgressSteps
+                activeStepIconBorderColor="#007AFF"
+                progressBarColor="#007AFF"
+                completedProgressBarColor="#007AFF"
+                activeStepIconColor="#007AFF"
+                completedStepIconColor="#007AFF"
+                activeStepNumColor="#FFFFFF"
+                activeLabelColor="#007AFF"
+                
+            >
+                <ProgressStep label="강의후기">
+                    <View style={styles.article}>
+                        <View style={styles.lecture_select_container}>
+                            <View style={styles.lecture_input_container}>
+                                <View style={styles.input_sub}>
+                                    <Text style={styles.input_text}>강의</Text>
+                                    <LectureTextInput
+                                        text='강의명을 정확하게 적어주세요.' 
+                                        value={value}
+                                        setValue={setValue}
+                                        input={"subject"}
+                                        data={"LIDData"}
+                                    />
+                                </View>
+                                <View style={styles.input_sub}>
+                                    <Text style={styles.input_text}>교수</Text>
+                                    <LectureTextInput
+                                        text='교수님 성함을 정확하게 적어주세요.' 
+                                        value={value}
+                                        setValue={setValue}
+                                        input={"professor_name"}
+                                        data={"LIDData"}
+                                    />                         
+                                </View>
+                            </View>
+                            <View style={styles.lecture_write_review_container}>
+                                <View style={styles.input_sub}>
+                                    <Text style={styles.input_text}>평점</Text>
+                                    <SelectRating value={value} setValue={setValue} />                        
+                                </View>
+                                <View style={styles.input_sub}>
+                                    <Text style={styles.input_text}>성적</Text>
+                                    <ReviewButton text={['힘들다', '적당하다', '좋다']} value={value} setValue={setValue} styleValue={0}/>
+                                </View>
+                                <View style={styles.input_sub}>
+                                    <Text style={styles.input_text}>후기</Text>
+                                    <ReviewTextInput text={"강의에 관해 자세히 적어주세요. ex)강의 스타일/교수님 성향/과제 내용 등"} value={value} setValue={setValue} input={"review"} data={"LIDData"}/>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </ProgressStep>
+                <ProgressStep 
+                    label="시험후기"
+                    onSubmit={reviewUpdate}
+                    finishBtnText="완료"
+                    previousBtnText="이전"
+                >
+                    <View style={styles.lecture_write_review_container}>
                         <View style={styles.lecture_input_container}>
                             <View style={styles.input_sub}>
-                                <Text style={styles.input_text}>강의</Text>
-                                <LectureTextInput
-                                    text='강의명을 정확하게 적어주세요.' 
-                                    value={value}
-                                    setValue={setValue}
-                                    input={"subject"}
-                                    data={"LIDData"}
-                                />
+                                <Text style={styles.input_text}>시험 전략</Text>
+                                <ReviewTextInput text={'시험전략을 적어주세요.'}  value={value} setValue={setValue} input={"test_tip"} data={"TestData"}/>
                             </View>
                             <View style={styles.input_sub}>
-                                <Text style={styles.input_text}>교수</Text>
-                                <LectureTextInput
-                                    text='교수님 성함을 정확하게 적어주세요.' 
-                                    value={value}
-                                    setValue={setValue}
-                                    input={"professor_name"}
-                                    data={"LIDData"}
-                                />                         
-                            </View>
-                        </View>
-                        <View style={styles.lecture_write_review_container}>
-                            <View style={styles.input_sub}>
-                                <Text style={styles.input_text}>평점</Text>
-                                <SelectRating value={value} setValue={setValue} />                        
+                                <Text style={styles.input_text}>문제유형</Text>
+                                <LevelButton text={['객관식', '주관식', '서술형', '실습']} styleValue={0} value={value} setValue={setValue} input={"test_type"} data={"TestData"} />
                             </View>
                             <View style={styles.input_sub}>
-                                <Text style={styles.input_text}>성적</Text>
-                                <ReviewButton text={['힘들다', '적당하다', '좋다']} value={value} setValue={setValue} styleValue={0}/>
-                            </View>
-                            <View style={styles.input_sub}>
-                                <Text style={styles.input_text}>후기</Text>
-                                <ReviewTextInput text={"강의에 관해 자세히 적어주세요. ex)강의 스타일/교수님 성향/과제 내용 등"} value={value} setValue={setValue} input={"review"} data={"LIDData"}/>
+                                <Text style={styles.input_text}>문제 예시</Text>
+                                <ReviewTextInput text={'문제 예시를 정확하게 적어주세요.'} value={value} setValue={setValue} input={"test_ex"} data={"TestData"} />
                             </View>
                         </View>
                     </View>
-                </View>
-            </ProgressStep>
-            <ProgressStep 
-                label="시험후기"
-                onSubmit={reviewUpdate}
-                finishBtnText="완료"
-                previousBtnText="이전"
-            >
-                <View style={styles.lecture_write_review_container}>
-                    <View style={styles.lecture_input_container}>
-                        <View style={styles.input_sub}>
-                            <Text style={styles.input_text}>시험 전략</Text>
-                            <ReviewTextInput text={'시험전략을 적어주세요.'}  value={value} setValue={setValue} input={"test_tip"} data={"TestData"}/>
-                        </View>
-                        <View style={styles.input_sub}>
-                            <Text style={styles.input_text}>문제유형</Text>
-                            <LevelButton text={['객관식', '주관식', '서술형', '실습']} styleValue={0} value={value} setValue={setValue} input={"test_type"} data={"TestData"} />
-                        </View>
-                        <View style={styles.input_sub}>
-                            <Text style={styles.input_text}>문제 예시</Text>
-                            <ReviewTextInput text={'문제 예시를 정확하게 적어주세요.'} value={value} setValue={setValue} input={"test_ex"} data={"TestData"} />
-                        </View>
-                    </View>
-                </View>
-            </ProgressStep>
-        </ProgressSteps>
+                </ProgressStep>
+            </ProgressSteps>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
 }
@@ -220,7 +223,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF'
     },
     header: {
-        flex: 0.1,
+        flex: 0.15,
         marginLeft: 20,
         marginRight: 20,
         justifyContent: 'center',

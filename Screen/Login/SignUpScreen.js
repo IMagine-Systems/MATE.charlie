@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, TextInput, TouchableOpacity} from "react-native";
+import { View, StyleSheet, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView} from "react-native";
 import { useState, useEffect } from "react";
 import {auth} from '../../db/DatabaseConfig/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -100,7 +100,7 @@ export default function SignUpScreen({navigation}) {
     }
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <View style={styles.header}>           
                 <Text style={styles.title}>회원가입</Text>
                 <TouchableOpacity 
@@ -111,7 +111,7 @@ export default function SignUpScreen({navigation}) {
                 </TouchableOpacity>                
             </View>
             <View style={styles.input_container}>
-                <View style={styles.text_input_container}>
+                <ScrollView>
                     <TextInput 
                         placeholder="Email"
                         style={styles.text_input}
@@ -138,7 +138,8 @@ export default function SignUpScreen({navigation}) {
                         style={styles.text_input}
                         onChangeText={text => handleChange(text, "name")}
                     />
-                    <View style={styles.gender_button_container}>
+                </ScrollView>
+                <View style={styles.gender_button_container}>
                         <TouchableOpacity
                             style={genderBtn !== "male" ? styles.gender_button : styles.select_gender_button}
                             onPress={() => handleButton("male", "gender")}
@@ -152,7 +153,6 @@ export default function SignUpScreen({navigation}) {
                             <Text style={genderBtn !== "female" ? null : styles.select_gender_button_text }>여성</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
                 <View style={styles.button_container}>
                     <TouchableOpacity
                         style={styles.button}
@@ -162,7 +162,7 @@ export default function SignUpScreen({navigation}) {
                     </TouchableOpacity>
                 </View>
             </View>
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -206,7 +206,8 @@ const styles = StyleSheet.create({
         right: 30,
     },
     gender_button_container: {
-        flexDirection:'row'
+        flexDirection:'row',
+        marginBottom: 20,
     },
     gender_button: {
         backgroundColor: '#DADADA',
@@ -227,6 +228,7 @@ const styles = StyleSheet.create({
     },
     button_container: {
         flex: 1,
+        marginBottom: 80,
     },
     button: {
         width: 300,

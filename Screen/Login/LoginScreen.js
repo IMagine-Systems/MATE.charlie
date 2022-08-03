@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TextInput, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import { auth } from '../../db/DatabaseConfig/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
@@ -30,7 +30,7 @@ export default function LoginScreen({navigation}) {
     }
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container} behavior={"padding"}>
             <View style={styles.header}>
                 <Text style={styles.title}>MATE</Text>
             </View>
@@ -64,7 +64,7 @@ export default function LoginScreen({navigation}) {
                     </TouchableOpacity>
                 </View>
             </View>
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 

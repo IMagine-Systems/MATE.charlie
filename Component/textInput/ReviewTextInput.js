@@ -18,6 +18,7 @@ export default function ReviewTextInput({text, value, setValue, input, data}) {
             placeholder={text}
             style={styles.review_input}
             onChangeText={(review) => handleChange(review, data, input)}
+            multiline={true}
         />
     )
 }

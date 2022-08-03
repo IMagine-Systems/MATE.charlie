@@ -1,5 +1,5 @@
-import { View, StyleSheet, Text, TouchableOpacity, Alert, SafeAreaView } from "react-native";
-import { useEffect, useState } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, Alert, SafeAreaView, ScrollView, KeyboardAvoidingView } from "react-native";
+import { useEffect, useState, useRef } from 'react';
 import { SearchBar } from 'react-native-elements';
 import CustomRatingBar from "../../Component/start_rating/CustomRatingBar";
 import { FontAwesome } from '@expo/vector-icons';
@@ -16,8 +16,40 @@ export default function HomeScreen({navigation}) {
     const [reviewCount, setReviewCount] = useState(0);
     const [reviewDatas, setReviewDatas] = useState([]);
     const [ myUid, setMyUid ] = useState("");
+    
+    const RUid = useRef(0); // RUID -> 신고한 uid.
+    
+    let declation_review = {
+        FalseReport : {
+            UID: 0,
+            RUID: 0,
+            LIDData: {
+              
+            },
+            TestData: {
+                
+            },
+        },
+        Slang: {
+            UID: 0,
+            RUID: 0,
+            LIDData: {
+                
+            },
+            TestData: {
+                
+            },
+        },
+        Disrespect: {
+            UID: 0,
+            RUID: 0,
+            LIDData: {
+            },
+            TestData: {
+            },
+        },
+    };
 
-    // 신고
     const [value, setValue] = useState({
         FalseReport : {
             UID: 0,
@@ -64,6 +96,7 @@ export default function HomeScreen({navigation}) {
     }, []);
 
     useEffect(() => {
+        getUid();
         getReviewData();
     }, [isFocused]);
 
@@ -81,8 +114,10 @@ export default function HomeScreen({navigation}) {
             if (snapshot.exists) {
                 snapshot.data().UserInfo.map((userDatas) => {
                     if (userDatas.email === myEmail) {
-                        uid = userDatas.UID;
-                        setMyUid(userDatas.UID);
+                        // uid = userDatas.UID;
+                        // setMyUid(userDatas.UID);
+                        RUid.current = userDatas.UID;
+                        console.log("current uid : ", RUid.current);
                     }
                 });
             } else {
@@ -94,15 +129,27 @@ export default function HomeScreen({navigation}) {
 
 
     const handleChange = (text, eventName, subEventName) => {
-        setValue(prev => (
-            {
-                ...prev,
-                [eventName]: {
-                    ...prev[eventName],
-                    [subEventName]: text
-                }
-            }
-        ))
+        
+        // setValue(prev => (
+        //     {
+        //         ...prev,
+        //         [eventName]: {
+        //             ...prev[eventName],
+        //             [subEventName]: text
+        //         }
+        //     }
+        // ))
+
+        declation_review[eventName][subEventName] = text;
+        //console.log("ref Review : ", refReview);
+
+        // refReview.current = { 
+        //     [eventName]: {
+        //         [subEventName]: text
+        //     },
+        // }
+        //console.log("refReview : ", refReview.current);
+        //console.log("declation_review: ", declation_review);
     }
 
     const searchLecture = (text) => {
@@ -138,7 +185,7 @@ export default function HomeScreen({navigation}) {
         } else {
             return (
                 reviewDatas.slice(0, 3).map((reviewData) => (
-                    <View style={{flex:0.5, justifyContent: 'center'}}>
+                    <View style={{flex:0.5, justifyContent: 'center', backgroundColor: 'ye'}}>
                         <TouchableOpacity 
                             style={styles.review}
                             onPress={() => navigation.navigate("ReviewInfo", reviewData)}
@@ -180,7 +227,7 @@ export default function HomeScreen({navigation}) {
     const showReview = () => {
         return (
             reviewDatas.map((reviewData) => reviewData.TestData.subject === search ? (
-                <View style={{flex:0.5, justifyContent: 'center'}}>
+                <View style={{flex:0.5, justifyContent: 'center', marginTop: 30}}>
                     <TouchableOpacity 
                         style={styles.review}
                         onPress={() => navigation.navigate("ReviewInfo", reviewData)}
@@ -225,39 +272,44 @@ export default function HomeScreen({navigation}) {
 
     const setDeclation = (find, reviewData) => {
         if (find === KEY_FALSEREPORT) {
-            handleChange(myUid, "FalseReport", "UID");
+            handleChange(RUid.current, "FalseReport", "UID");
             handleChange(reviewData.UID, "FalseReport", "RUID");
             handleChange(reviewData.LIDData, "FalseReport", "LIDData");
             handleChange(reviewData.TestData, "FalseReport", "TestData");
             //console.log("신고 들어왔어요! : ", value);
-            declationUpdate();
+            declationUpdate(reviewData.UID);
 
         } else if (find === KEY_SLANG) {
-            handleChange(myUid, "Slang", "UID");
+            handleChange(RUid.current, "Slang", "UID");
             handleChange(reviewData.UID, "Slang", "RUID");
             handleChange(reviewData.LIDData, "Slang", "LIDData");
             handleChange(reviewData.TestData, "Slang", "TestData");
             //console.log("신고 들어왔어요! : ", value);
-            declationUpdate();
+            declationUpdate(reviewData.UID);
         } else if (find === KEY_DISRESPECT) {
-            handleChange(myUid, "Disrespect", "UID");
+            handleChange(RUid.current, "Disrespect", "UID");
             handleChange(reviewData.UID, "Disrespect", "RUID");
             handleChange(reviewData.LIDData, "Disrespect", "LIDData");
             handleChange(reviewData.TestData, "Disrespect", "TestData");
             //console.log("신고 들어왔어요! : ", value);
-            declationUpdate();
+            declationUpdate(reviewData.UID);
         }
     }
 
-    const declationUpdate = () => {
-        setDoc(myDocDeclation, {"DeclarationInfo": arrayUnion(value)}, {merge: true})
-        .then(() => {   
-            alert("신고 완료");
-        })
-        .catch((error) => alert(error.message));
+    const declationUpdate = (uid) => {
+        if (RUid.current !== uid) {
+            setDoc(myDocDeclation, {"DeclarationInfo": arrayUnion(declation_review)}, {merge: true})
+            .then(() => {   
+                alert("신고 완료");
+            })
+            .catch((error) => alert(error.message));
+        } else {
+            alert("신고 실패!");
+        }
     }
 
     const quit = (reviewData) => {
+        console.log("신고 : ", reviewData);
         Alert.alert(
             "신고",
             "",
@@ -312,7 +364,11 @@ export default function HomeScreen({navigation}) {
                         />
                     </View>
                 </View>
-                {search === "" ? showCurrentReview() : showReview()}
+                <View style={{flex: 1}}>
+                    <ScrollView>
+                        {search === "" ? showCurrentReview() : showReview()}
+                    </ScrollView>
+                </View>
 
             </View>
             <View style={styles.sub_container}>
