@@ -117,7 +117,7 @@ export default function WriteReview({navigation}) {
 
   return (
       <SafeAreaView style={styles.container}>
-        <KeyboardAvoidingView style={styles.container} behavior={"padding"}>
+        <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <View style={styles.header}>
                 <View style={styles.title_container}>
                     <View style={styles.title_logo}>

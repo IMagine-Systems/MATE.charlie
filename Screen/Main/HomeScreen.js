@@ -50,36 +50,36 @@ export default function HomeScreen({navigation}) {
         },
     };
 
-    const [value, setValue] = useState({
-        FalseReport : {
-            UID: 0,
-            RUID: 0,
-            LIDData: {
+    // const [value, setValue] = useState({
+    //     FalseReport : {
+    //         UID: 0,
+    //         RUID: 0,
+    //         LIDData: {
               
-            },
-            TestData: {
+    //         },
+    //         TestData: {
                 
-            },
-        },
-        Slang: {
-            UID: 0,
-            RUID: 0,
-            LIDData: {
+    //         },
+    //     },
+    //     Slang: {
+    //         UID: 0,
+    //         RUID: 0,
+    //         LIDData: {
                 
-            },
-            TestData: {
+    //         },
+    //         TestData: {
                 
-            },
-        },
-        Disrespect: {
-            UID: 0,
-            RUID: 0,
-            LIDData: {
-            },
-            TestData: {
-            },
-        },
-    });
+    //         },
+    //     },
+    //     Disrespect: {
+    //         UID: 0,
+    //         RUID: 0,
+    //         LIDData: {
+    //         },
+    //         TestData: {
+    //         },
+    //     },
+    // });
     const KEY_FALSEREPORT = "허위 작성";
     const KEY_DISRESPECT = "성의 없음";
     const KEY_SLANG = "비속어";
