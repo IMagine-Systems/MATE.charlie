@@ -1,5 +1,5 @@
 import { View, StyleSheet, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView} from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {auth} from '../../db/DatabaseConfig/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { db } from '../../db/DatabaseConfig/firebase';
@@ -19,12 +19,26 @@ export default function SignUpScreen({navigation}) {
 
     });
 
+    // let value = {
+    //     UID : 0,
+    //     email: "",
+    //     password: "",
+    //     department: "",
+    //     student_id: "",
+    //     name: "",
+    //     gender: "",
+    //     point: 0,
+
+    // };
+
     const [ genderBtn, setGenderBtn ] = useState("");
 
-    const [ validation, setValidation ] = useState(false);
-    
+    //const [ validation, setValidation ] = useState(false);
+    // useRef 활용
+    const validation = useRef(false);
+    //let validation = false;
+
     useEffect(() => {
-        validationUser();
     }, []);
 
     const handleChange = (text, eventName) => {
@@ -34,25 +48,71 @@ export default function SignUpScreen({navigation}) {
                 [eventName]: text
             }
         })
+        //value[eventName] = text
     }
 
     const handleButton = (text, eventName) => {
         setGenderBtn(text);
+        console.log("성별 : ",text);
         setValue(prev => {
             return {
                 ...prev,
                 [eventName] : text
             }
         })
+        //value[eventName] = text;
+        console.log(value);
     }
 
-
-    const SignUp = () => {
-        validationUser();
-        const {UID, email, password, department, student_id, name, gender, point} = value;
+    
+    
+    const validationUser = async () => {
         const myDoc = doc(db, 'User', 'UserInfo');
         
-        if (validation === true) {
+        await getDoc(myDoc)
+        .then((snapshot) => {
+            if (snapshot.exists) {
+                if (snapshot.data().UserInfo.length === 0) {
+                    console.log("검증 진행 : ", value);
+                    value.UID = snapshot.data().UID;
+                    //setValidation(true);
+                    if (value.name !== "" && value.student_id !== "" && value.department !== "" && value.gender !== "") {
+                        value.UID = snapshot.data().UID;
+                        //setValidation(true);
+                        validation.current = true;
+                    } else {
+                        //setValidation(false);
+                        validation.current = false;
+                    }
+                } else {
+                    console.log("d", value);
+                    snapshot.data().UserInfo.forEach(element => {
+                        if (value.name !== "" && value.student_id !== "" && value.department !== "" && value.gender !== "") {
+                            value.UID = snapshot.data().UID;
+                            //setValidation(true);
+                            validation.current = true;
+                        } else {
+                            //setValidation(false);
+                            validation.current === false;
+                        }
+                    });
+                }
+            } else {
+                alert("No Document");
+            }
+        })
+        .catch((error) => {
+            alert(error.message);
+        });
+    }
+    
+    const SignUp = async () => {
+        await validationUser();
+        const {UID, email, password, department, student_id, name, gender, point} = value;
+        const myDoc = doc(db, 'User', 'UserInfo');
+        console.log("SignUp 검증 끝: " , validation.current);
+
+        if (validation.current === true) {
             setDoc(myDoc, {"UID" : value.UID+1, "UserInfo": arrayUnion(value)}, {merge: true})
             .then(() => alert("회원 등록"))
             .catch((error) => alert(error.message));
@@ -69,36 +129,6 @@ export default function SignUpScreen({navigation}) {
             alert("회원가입 실패했습니다.");
         }
     }
-
-    
-    const validationUser = () => {
-        const myDoc = doc(db, 'User', 'UserInfo');
-
-        getDoc(myDoc)
-        .then((snapshot) => {
-          if (snapshot.exists) {
-            if (snapshot.data().UserInfo.length === 0) {
-                value.UID = snapshot.data().UID;
-                setValidation(true);
-            } else {
-                snapshot.data().UserInfo.forEach(element => {
-                    if (value.name !== "" && value.student_id !== "" && value.department !== "" && value.student_id !== element.student_id && value.gender !== "") {
-                        value.UID = snapshot.data().UID;
-                        setValidation(true);
-                    } else {
-                        setValidation(false);
-                    }
-                });
-            }
-        } else {
-            alert("No Document");
-          }
-        })
-        .catch((error) => {
-          alert(error.message);
-        });
-    }
-
     return (
         <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <View style={styles.header}>           
@@ -116,6 +146,7 @@ export default function SignUpScreen({navigation}) {
                         placeholder="Email"
                         style={styles.text_input}
                         onChangeText={text => handleChange(text, "email")}
+                        
                     />
                     <TextInput
                         placeholder="Password"

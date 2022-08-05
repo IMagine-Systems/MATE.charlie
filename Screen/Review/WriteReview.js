@@ -23,7 +23,7 @@ export default function WriteReview({navigation}) {
             professor_name: "",
             code: 0,
             day: "",
-            score: 3.0,
+            score: 0,
             difficulty: "",
             review: "",
         },
@@ -67,7 +67,7 @@ export default function WriteReview({navigation}) {
         })
     } 
 
-    const getUid = () => {
+    const getUid = async () => {
         const myDoc = doc(db, "User", "UserInfo");
         let uid;
         let myEmail;
@@ -75,7 +75,7 @@ export default function WriteReview({navigation}) {
             myEmail = user.email; 
         });
         
-        getDoc(myDoc)
+        await getDoc(myDoc)
         .then((snapshot) => {
             if (snapshot.exists) {
                 snapshot.data().UserInfo.map((userDatas) => {
@@ -103,16 +103,22 @@ export default function WriteReview({navigation}) {
         handleChange(day, "TestData", "day");
     }
 
-    const reviewUpdate = () => {
+    const reviewUpdate = async () => {
         const myDoc = doc(db, 'Review', 'ReviewData');
-        getUid();
+        await getUid();
         setDate();
-        setDoc(myDoc, {"ReviewData": arrayUnion(value)}, {merge: true})
-        .then(() => {   
-            alert("후기 등록 완료");
-            navigation.navigate("HomeScreen");
-        })
-        .catch((error) => alert(error.message));
+        if (
+            value.LIDData.difficulty !== "" && value.LIDData.subject !== "" && value.LIDData.professor_name !== "" && value.LIDData.score !== 0 &&  value.LIDData.review !== "" &&
+            value.TestData.test_type !== "" && value.TestData.subject !== "" && value.TestData.professor_name !== "" && value.TestData.test_tip !== "" && value.TestData.test_ex !== "") {
+            await setDoc(myDoc, {"ReviewData": arrayUnion(value)}, {merge: true})
+            .then(() => {   
+                alert("후기 등록 완료");
+                navigation.navigate("HomeScreen");
+            })
+            .catch((error) => alert(error.message));
+        } else {
+            alert("리뷰 작성 안한 항목이 있습니다.");
+        }
     }
 
   return (
@@ -182,7 +188,7 @@ export default function WriteReview({navigation}) {
                                 </View>
                                 <View style={styles.input_sub}>
                                     <Text style={styles.input_text}>후기</Text>
-                                    <ReviewTextInput text={"강의에 관해 자세히 적어주세요. ex)강의 스타일/교수님 성향/과제 내용 등"} value={value} setValue={setValue} input={"review"} data={"LIDData"}/>
+                                    <ReviewTextInput text={"강의에 관해 자세히 적어주세요. ex)강의 스타일/교수님 성향/과제 내용 등 최대 250자 작성 가능"} value={value} setValue={setValue} input={"review"} data={"LIDData"}/>
                                 </View>
                             </View>
                         </View>
@@ -198,7 +204,7 @@ export default function WriteReview({navigation}) {
                         <View style={styles.lecture_input_container}>
                             <View style={styles.input_sub}>
                                 <Text style={styles.input_text}>시험 전략</Text>
-                                <ReviewTextInput text={'시험전략을 적어주세요.'}  value={value} setValue={setValue} input={"test_tip"} data={"TestData"}/>
+                                <ReviewTextInput text={'시험전략을 적어주세요. 최대 250자 작성 가능'}  value={value} setValue={setValue} input={"test_tip"} data={"TestData"}/>
                             </View>
                             <View style={styles.input_sub}>
                                 <Text style={styles.input_text}>문제유형</Text>
@@ -206,7 +212,7 @@ export default function WriteReview({navigation}) {
                             </View>
                             <View style={styles.input_sub}>
                                 <Text style={styles.input_text}>문제 예시</Text>
-                                <ReviewTextInput text={'문제 예시를 정확하게 적어주세요.'} value={value} setValue={setValue} input={"test_ex"} data={"TestData"} />
+                                <ReviewTextInput text={'문제 예시를 정확하게 적어주세요. 최대 250작성 가능'} value={value} setValue={setValue} input={"test_ex"} data={"TestData"} />
                             </View>
                         </View>
                     </View>

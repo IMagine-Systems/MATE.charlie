@@ -20,6 +20,7 @@ export default function LectureTextInput({text, value, setValue, input, data}) {
                 handleChange(text, data, input);
                 handleChange(text, "TestData", input);
             }}
+            maxLength={250}
         />
     )
 }

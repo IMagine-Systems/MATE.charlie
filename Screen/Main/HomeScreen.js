@@ -343,7 +343,10 @@ export default function HomeScreen({navigation}) {
                     </View>
                     <View style={styles.profile}>
                         <TouchableOpacity
-                            onPress={() => navigation.navigate("ProfileScreen")}
+                            onPress={() => {                                
+                                navigation.navigate("ProfileScreen");
+                            }
+                        }
                         >
                             <Ionicons name="person-circle" size={38} color="#A6CFFF" />
                         </TouchableOpacity>
