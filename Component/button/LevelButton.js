@@ -1,5 +1,5 @@
 import { View, StyleSheet, Text, TouchableOpacity, TextInput} from "react-native";
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 
 export default function LevelButton({text, value, setValue, styleValue}) {
     const [select, setSelect] = useState('');
@@ -15,6 +15,13 @@ export default function LevelButton({text, value, setValue, styleValue}) {
             }
         })
     }
+
+    useEffect(() => {
+        if (value !== "") {
+            setSelect(value);
+            handleChange(value, "TestData", "test_type");
+        }
+    }, [])
 
     return (
         <View style={[styles.button_select_container, {marginLeft: styleValue}]}>

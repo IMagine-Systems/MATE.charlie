@@ -3,7 +3,7 @@ import { signOut } from "firebase/auth";
 import { MaterialIcons } from '@expo/vector-icons';
 import {useState, useEffect, useRef} from 'react';
 import { db, auth } from "../../db/DatabaseConfig/firebase";
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, arrayRemove } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import CustomRatingBar from "../../Component/start_rating/CustomRatingBar";
 import React from 'react';
@@ -11,9 +11,18 @@ import React from 'react';
 
 export default function ProfileScreen({navigation}) {
     const [ myReviews, setMyReviews ] = useState([]);
+    const [ updateReviews, setUpdateReviews ] = useState({});
+    const [ update, setUpdate ] = useState(false);
+    // 리뷰 마다 번호 부여
+    const [ reviewCount, setReviewCount ] = useState(0);
+
     const myDocUser = doc(db, "User", "UserInfo");
     const myDocReview = doc(db, "Review", "ReviewData");
     const myUid = useRef(0);
+
+
+    let updateReviewRef = useRef({});
+    let deleteReviewRef = useRef({});
 
     useEffect(() => {
         getUid();
@@ -21,13 +30,13 @@ export default function ProfileScreen({navigation}) {
     }, []);
     
 
-    const getUid = () => {
+    const getUid = async () => {
         let myEmail;
         onAuthStateChanged(auth, (user) => {
             myEmail = user.email; 
         });
         
-        getDoc(myDocUser)
+       await getDoc(myDocUser)
         .then((snapshot) => {
             if (snapshot.exists) {
                 snapshot.data().UserInfo.map((userDatas) => {
@@ -45,16 +54,17 @@ export default function ProfileScreen({navigation}) {
     }
 
 
-    const getReviewData = () => {
+    const getReviewData = async () => {
 
-        getDoc(myDocReview)
+        await getDoc(myDocReview)
         .then((snapshot) => {
             if (snapshot.exists) {
                 snapshot.data().ReviewData.map((reviewData) => {
                     if (reviewData.UID === myUid.current) {          
                         //setMyReviews([...myReviews, reviewData.LIDData])
-                        setMyReviews((myReviews) => [...myReviews, reviewData.LIDData]);
-                    } else {                                            
+                        setMyReviews((myReviews) => [...myReviews, reviewData.LIDData]);                    
+                        
+                    } else {                                           
                         return ;
                     }
                 })
@@ -65,29 +75,113 @@ export default function ProfileScreen({navigation}) {
         .catch((error) => console.log(error.message));
     }
 
+    const onUpdateReview = async (review) => {
+
+        await getDoc(myDocReview)
+        .then((snapshot) => {
+            if (snapshot.exists) {
+                snapshot.data().ReviewData.map((reviewData) => {
+                    if (reviewData.LIDData.reviewCount === review.reviewCount) {          
+                        //setMyReviews([...myReviews, reviewData.LIDData])
+                        
+                        //setUpdateReviews(prev => {...prev, ...reviewData});
+                        updateReviewRef.current = reviewData;
+                    } else {                                           
+                        return ;
+                    }
+                })
+            } else {
+                console.log("No Document!");
+            }
+        })
+        .catch((error) => console.log(error.message));
+    }
+
+    const onDeleteReview = async (review) => {
+        await getDoc(myDocReview)
+        .then((snapshot) => {
+            if (snapshot.exists) {
+                snapshot.data().ReviewData.map((reviewData) => {
+                    if (reviewData.LIDData.reviewCount === review.reviewCount) {          
+                        //setMyReviews([...myReviews, reviewData.LIDData])
+                        
+                        //setUpdateReviews(prev => {...prev, ...reviewData});
+                        deleteReviewRef.current = reviewData;
+                        reviewDelete();
+                    } else {                                           
+                        return ;
+                    }
+                })
+            } else {
+                console.log("No Document!");
+            }
+        })
+        .catch((error) => console.log(error.message));
+
+    }
+
+    const reviewDelete = () => {
+        console.log("삭제 : ", deleteReviewRef.current);
+            
+        updateDoc(myDocReview, {"ReviewData": arrayRemove(deleteReviewRef.current)}, {merge: true})
+        .then(() => {   
+            alert("리뷰 삭제 완료");
+            navigation.navigate("HomeScreen");
+        })
+        .catch((error) => alert(error.message));
+        
+    }
+
     const showMyReview = () => {
         return(
-            myReviews.map(review => (
-                <View style={styles.lecture_list}>
-                    <View style={styles.lecture_review_info}>
-                        
-                        <View style={{marginBottom: 5}}>
-                            <Text style={{fontSize: 22, marginBottom: 8}}>{review.subject}</Text>
-                            <Text style={{fontSize: 17}}>{review.professor_name} 교수</Text>
-                        </View>
-                        <View style={styles.lecture_score_container}>
-                            <CustomRatingBar data={review}/>
-                            <View style={styles.review_writer_studentID}>
-                                <Text style={styles.review_writer}>22학년도 수강자</Text>
+            myReviews.map(review => {
+                //setReviewCount(prev => prev + 1);
+
+                return (
+                    <View style={styles.lecture_list}>
+                        <View style={styles.lecture_review_info}>
+                            <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+                                <View style={{marginBottom: 5}}>
+                                    <Text style={{fontSize: 22, marginBottom: 8}}>{review.subject}</Text>
+                                    <Text style={{fontSize: 17}}>{review.professor_name} 교수</Text>
+                                </View>
+                                <View style={{display: 'flex', flexDirection: 'row'}}>
+                                    <TouchableOpacity 
+                                        style={{backgroundColor: '#007AFF', padding: 10, borderRadius: 12, marginRight: 10}}
+                                        onPress={async () => {      
+                                            await onUpdateReview(review);   
+                                            console.log("show review : ", updateReviewRef.current);                           
+                                            navigation.navigate("UpdateReview", updateReviewRef.current)
+                                        }}
+                                    >
+                                        <Text style={{color:"white"}}>수정</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity 
+                                        style={{backgroundColor: '#007AFF', padding: 10, borderRadius: 12, marginRight: 10}}
+                                        onPress={async () => {  
+                                            await onDeleteReview(review);                                            
+                                            console.log("show Delete review : ", deleteReviewRef.current);                           
+                                        }}
+                                    >
+                                        <Text style={{color:"white"}}>삭제</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                        </View>
-                    
-                        <View style={styles.lecture_review_content}>
-                            <Text>{review.review}</Text>
-                        </View>
-                    </View>                               
-                </View>
-            ))
+                            <View style={styles.lecture_score_container}>
+                                <CustomRatingBar data={review}/>
+                                <View style={styles.review_writer_studentID}>
+                                    <Text style={styles.review_writer}>22학년도 수강자</Text>
+                                </View>
+                            </View>
+                        
+                            <View style={styles.lecture_review_content}>
+                                <Text>{review.review}</Text>
+                            </View>
+                        </View>                               
+                    </View>
+                )
+            
+            })
         );
     }
 
@@ -106,6 +200,8 @@ export default function ProfileScreen({navigation}) {
     }
 
 
+    console.log( "update Review Data : ", updateReviewRef.current);
+    console.log( "review count : ", reviewCount);
 
     return (
         <SafeAreaView style={styles.container}>
