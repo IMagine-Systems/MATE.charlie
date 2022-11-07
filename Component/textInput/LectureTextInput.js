@@ -1,5 +1,8 @@
 import {StyleSheet, TextInput} from "react-native";
+import { useState, useEffect } from "react/cjs/react.development";
 export default function LectureTextInput({text, value, setValue, input, data}) {
+    const [texts, setTexts] = useState(value??"");
+
     const handleChange = (text, eventName, subEventName) => {
         setValue(prev => {
             return {
@@ -10,12 +13,23 @@ export default function LectureTextInput({text, value, setValue, input, data}) {
                 }
             }
         })
+        setTexts(text);
         //console.log(value);
     }
+
+    useEffect(() => {
+        if (texts !== "") {
+            handleChange(texts, data, input);
+            handleChange(texts, "TestData", input);
+        }
+    }, []);
+
+    
     return (
         <TextInput
             placeholder={text} 
             style={styles.lecture_professor_input}
+            value={texts}
             onChangeText={(text) => {
                 handleChange(text, data, input);
                 handleChange(text, "TestData", input);

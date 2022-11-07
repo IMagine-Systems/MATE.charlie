@@ -1,8 +1,8 @@
 import { View, Image, StyleSheet, TouchableOpacity } from "react-native";
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 
 export default function SelectRating({value, setValue}) {
-    const [defaultRating, setDefaultRating] = useState(0);
+    const [defaultRating, setDefaultRating] = useState(value);
     const [maxRating, setMaxRating] = useState([1, 2, 3, 4, 5]);
 
     const starImageFilled = 'https://raw.githubusercontent.com/AboutReact/sampleresource/master/star_filled.png';
@@ -20,6 +20,12 @@ export default function SelectRating({value, setValue}) {
         })
         console.log(value);
     }
+
+    useEffect(() => {
+        if (value > 0) {
+            handleChange(value, "LIDData", "score");
+        }
+    }, [])
 
     return (
         <View style={styles.customRatingBarStyle}>

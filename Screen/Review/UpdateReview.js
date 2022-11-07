@@ -8,10 +8,10 @@ import LectureTextInput from "../../Component/textInput/LectureTextInput";
 import ReviewTextInput from "../../Component/textInput/ReviewTextInput";
 import LevelButton from "../../Component/button/LevelButton";
 import { db, auth } from "../../db/DatabaseConfig/firebase";
-import { doc, setDoc, arrayUnion, getDoc, connectFirestoreEmulator } from 'firebase/firestore';
+import { doc, setDoc, arrayUnion, getDoc, deleteDoc, updateDoc, arrayRemove } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 
-export default function WriteReview({navigation}) {
+export default function UpdateReview({navigation, route}) {
 
     //const [ myEmail, setMyEmail ] = useState("");
     const [ myUid, setMyUid ] = useState("");
@@ -37,13 +37,11 @@ export default function WriteReview({navigation}) {
             test_ex: "",
             day: "",
         },
-
     });
     
     useEffect(() => {
         setDate();
         getUid();
-        getReview();
     }, []);
 
 
@@ -94,20 +92,6 @@ export default function WriteReview({navigation}) {
         .catch((error) => console.log(error.message));
     }
 
-    const getReview = async () => {
-        const myDoc2 = doc(db, "Review", "ReviewData");
-        
-        await getDoc(myDoc2)
-        .then((snapshot) => {
-            if (snapshot.exists) {
-                handleChange(snapshot.data().ReviewData.length+1, "LIDData", "reviewCount");
-            } else {
-                console.log("No Document!");
-            }
-        })
-        .catch((error) => console.log(error.message));
-    }
-
     const setDate = () => {
         let today = new Date();  
         let year = today.getFullYear();
@@ -126,16 +110,24 @@ export default function WriteReview({navigation}) {
         if (
             value.LIDData.difficulty !== "" && value.LIDData.subject !== "" && value.LIDData.professor_name !== "" && value.LIDData.score !== 0 &&  value.LIDData.review !== "" &&
             value.TestData.test_type !== "" && value.TestData.subject !== "" && value.TestData.professor_name !== "" && value.TestData.test_tip !== "" && value.TestData.test_ex !== "") {
-            await setDoc(myDoc, {"ReviewData": arrayUnion(value)}, {merge: true})
+            //handleChange(route.params.LIDData.reviewCount, "LIDData", "reviewCount");
+            value.LIDData.reviewCount = route.params.LIDData.reviewCount;
+            
+            console.log(value.LIDData.reviewCount);
+            await updateDoc(myDoc, {"ReviewData": arrayRemove(route.params)}, {merge: true})
+            await updateDoc(myDoc, {"ReviewData": arrayUnion(value)}, {merge: true})
             .then(() => {   
-                alert("후기 등록 완료");
+                alert("수정 완료");
                 navigation.navigate("HomeScreen");
             })
             .catch((error) => alert(error.message));
         } else {
+            console.log(value);
             alert("리뷰 작성 안한 항목이 있습니다.");
         }
     }
+
+    console.log("WriteReview Update : ", route.params.LIDData);
   return (
       <SafeAreaView style={styles.container}>
         <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
@@ -175,7 +167,7 @@ export default function WriteReview({navigation}) {
                                     <Text style={styles.input_text}>강의</Text>
                                     <LectureTextInput
                                         text='강의명을 정확하게 적어주세요.' 
-                                        value={value}
+                                        value={route.params.LIDData.subject}
                                         setValue={setValue}
                                         input={"subject"}
                                         data={"LIDData"}
@@ -185,7 +177,7 @@ export default function WriteReview({navigation}) {
                                     <Text style={styles.input_text}>교수</Text>
                                     <LectureTextInput
                                         text='교수님 성함을 정확하게 적어주세요.' 
-                                        value={value}
+                                        value={route.params.LIDData.professor_name}
                                         setValue={setValue}
                                         input={"professor_name"}
                                         data={"LIDData"}
@@ -195,15 +187,15 @@ export default function WriteReview({navigation}) {
                             <View style={styles.lecture_write_review_container}>
                                 <View style={styles.input_sub}>
                                     <Text style={styles.input_text}>평점</Text>
-                                    <SelectRating value={value} setValue={setValue} />                        
+                                    <SelectRating value={route.params.LIDData.score} setValue={setValue} />                        
                                 </View>
                                 <View style={styles.input_sub}>
                                     <Text style={styles.input_text}>성적</Text>
-                                    <ReviewButton text={['힘들다', '적당하다', '좋다']} value={value} setValue={setValue} styleValue={0}/>
+                                    <ReviewButton text={['힘들다', '적당하다', '좋다']} value={route.params.LIDData.difficulty} setValue={setValue} styleValue={0}/>
                                 </View>
                                 <View style={styles.input_sub}>
                                     <Text style={styles.input_text}>후기</Text>
-                                    <ReviewTextInput text={"강의에 관해 자세히 적어주세요. ex)강의 스타일/교수님 성향/과제 내용 등 최대 250자 작성 가능"} value={value} setValue={setValue} input={"review"} data={"LIDData"}/>
+                                    <ReviewTextInput text={"강의에 관해 자세히 적어주세요. ex)강의 스타일/교수님 성향/과제 내용 등 최대 250자 작성 가능"} value={route.params.LIDData.review} setValue={setValue} input={"review"} data={"LIDData"}/>
                                 </View>
                             </View>
                         </View>
@@ -219,15 +211,15 @@ export default function WriteReview({navigation}) {
                         <View style={styles.lecture_input_container}>
                             <View style={styles.input_sub}>
                                 <Text style={styles.input_text}>시험 전략</Text>
-                                <ReviewTextInput text={'시험전략을 적어주세요. 최대 250자 작성 가능'}  value={value} setValue={setValue} input={"test_tip"} data={"TestData"}/>
+                                <ReviewTextInput text={'시험전략을 적어주세요. 최대 250자 작성 가능'}  value={route.params.TestData.test_tip} setValue={setValue} input={"test_tip"} data={"TestData"}/>
                             </View>
                             <View style={styles.input_sub}>
                                 <Text style={styles.input_text}>문제유형</Text>
-                                <LevelButton text={['객관식', '주관식', '서술형', '실습']} styleValue={0} value={value} setValue={setValue} input={"test_type"} data={"TestData"} />
+                                <LevelButton text={['객관식', '주관식', '서술형', '실습']} styleValue={0} value={route.params.TestData.test_type} setValue={setValue} input={"test_type"} data={"TestData"} />
                             </View>
                             <View style={styles.input_sub}>
                                 <Text style={styles.input_text}>문제 예시</Text>
-                                <ReviewTextInput text={'문제 예시를 정확하게 적어주세요. 최대 250작성 가능'} value={value} setValue={setValue} input={"test_ex"} data={"TestData"} />
+                                <ReviewTextInput text={'문제 예시를 정확하게 적어주세요. 최대 250작성 가능'} value={route.params.TestData.test_ex} setValue={setValue} input={"test_ex"} data={"TestData"} />
                             </View>
                         </View>
                     </View>
